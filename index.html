@@ -1193,36 +1193,18 @@
     initSupabase();
 
     function loadPosts() {
-      const saved = localStorage.getItem(storageKey);
-      if (saved) return JSON.parse(saved);
-      const today = new Date();
-      return [
-        {
-          id: crypto.randomUUID(),
-          title: "Waarom je contentritme belangrijker is dan inspiratie",
-          date: toDateInput(today),
-          time: "09:15",
-          type: "Thought leadership",
-          media: "document",
-          status: "draft",
-          hook: "Inspiratie is fijn, maar ritme wint.",
-          text: "Veel teams wachten op het perfecte idee. LinkedIn werkt beter als je vaste rubrieken en publicatiemomenten gebruikt.",
-          goal: "Autoriteit"
-        },
-        {
-          id: crypto.randomUUID(),
-          title: "Praktische tip: maak een postbank",
-          date: toDateInput(addDays(today, 3)),
-          time: "11:30",
-          type: "Tip",
-          media: "foto",
-          status: "idea",
-          hook: "Een lege agenda begint meestal met een lege postbank.",
-          text: "",
-          goal: "Zichtbaarheid"
-        }
-      ];
+  const saved = localStorage.getItem(storageKey);
+
+  if (saved) {
+    try {
+      return JSON.parse(saved);
+    } catch (error) {
+      console.warn("Lokale planning kon niet worden gelezen:", error);
     }
+  }
+
+  return [];
+}
 
     function savePosts() {
       try {
