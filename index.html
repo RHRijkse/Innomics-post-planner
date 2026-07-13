@@ -1073,53 +1073,7 @@
     </div>
   </aside>
 
-  <!--
-    Supabase setup voor gedeelde agenda:
 
-    1. Maak in Supabase een tabel met deze SQL:
-
-    create table if not exists public.linkedin_posts (
-      id uuid primary key,
-      title text not null default '',
-      date date not null,
-      time text,
-      type text,
-      media text,
-      attachment jsonb,
-      status text,
-      hook text,
-      text text,
-      goal text,
-      updated_at timestamptz not null default now()
-    );
-
-    alter table public.linkedin_posts enable row level security;
-
-    -- Simpel delen zonder login. Alleen gebruiken als deze planner niet publiek bedoeld is.
-    create policy "Iedereen mag posts lezen"
-      on public.linkedin_posts for select
-      using (true);
-
-    create policy "Iedereen mag posts toevoegen"
-      on public.linkedin_posts for insert
-      with check (true);
-
-    create policy "Iedereen mag posts aanpassen"
-      on public.linkedin_posts for update
-      using (true)
-      with check (true);
-
-    create policy "Iedereen mag posts verwijderen"
-      on public.linkedin_posts for delete
-      using (true);
-
-    2. Ga in Supabase naar Project Settings > API.
-    3. Kopieer de Project URL en anon public key.
-    4. Vul ze hieronder in bij supabaseConfig.
-
-    Zet je Postgres connection string of database password nooit in deze HTML.
-    Alles in een HTML-bestand is zichtbaar voor bezoekers.
-  -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const storageKey = "linkedin-post-planner-v1";
