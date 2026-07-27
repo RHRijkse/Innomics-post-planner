@@ -1087,7 +1087,7 @@
     const statusLabels = { idea: "Idee", draft: "Concept", ready: "Klaar", posted: "Geplaatst" };
     const mediaLabels = { tekst: "Tekst", foto: "Foto", document: "Document", event: "Event", celebrate: "Vieren", meer: "Meer" };
     const mediaIcons = { tekst: "Aa", foto: "▧", document: "▤", event: "▦", celebrate: "✹", meer: "+" };
-    const maxAttachmentSize = 3 * 1024 * 1024;
+    const maxAttachmentSize = 10 * 1024 * 1024;
 
     let posts = loadPosts();
     let cursor = new Date();
@@ -1509,7 +1509,7 @@
       const file = input.files && input.files[0];
       if (!file) return;
       if (file.size > maxAttachmentSize) {
-        alert("Dit bestand is groter dan 3 MB. Kies een kleinere versie, zodat de planner snel blijft.");
+        alert("Dit bestand is groter dan 10 MB. Kies een kleinere versie, zodat de planner snel blijft.");
         input.value = "";
         return;
       }
