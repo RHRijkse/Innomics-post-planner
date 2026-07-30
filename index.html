@@ -188,6 +188,91 @@
       margin-bottom: 14px;
     }
 
+    .ideas-sidebar-actions {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .idea-organize-panel {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: white;
+    }
+
+    .idea-organize-panel[hidden] {
+      display: none;
+    }
+
+    .idea-organize-panel summary {
+      min-height: 38px;
+      padding: 0 11px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 800;
+      list-style: none;
+      user-select: none;
+    }
+
+    .idea-organize-panel summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .idea-organize-panel[open] summary {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .idea-organize-chevron {
+      color: var(--muted);
+      font-size: 16px;
+      transform: rotate(0);
+      transition: transform .16s ease;
+    }
+
+    .idea-organize-panel[open] .idea-organize-chevron {
+      transform: rotate(90deg);
+    }
+
+    .idea-organize-body {
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+      background: #fbfcfd;
+    }
+
+    .idea-organize-body label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .idea-organize-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 7px;
+    }
+
+    .idea-organize-row button {
+      min-width: 42px;
+      padding: 0 9px;
+    }
+
+    .idea-folder-creator {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 7px;
+    }
+
+    .idea-folder-creator[hidden] {
+      display: none;
+    }
+
     .ideas-sidebar h2 {
       margin: 0;
       font-size: 16px;
@@ -195,19 +280,143 @@
 
     .ideas-list {
       display: grid;
+      gap: 8px;
+    }
+
+    .idea-folder-group {
+      min-width: 0;
+    }
+
+    .idea-folder-toggle {
+      width: 100%;
+      min-height: 38px;
+      padding: 0 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      border-color: transparent;
+      color: var(--ink);
+      background: transparent;
+      text-align: left;
+    }
+
+    .idea-folder-toggle:hover {
+      border-color: var(--line);
+      background: #eef3f7;
+    }
+
+    .idea-folder-toggle.idea-folder-drop-target {
+      border-color: var(--brand);
+      background: #e8f2fb;
+      box-shadow: inset 3px 0 0 var(--brand);
+    }
+
+    .idea-folder-heading {
+      min-width: 0;
+      display: flex;
+      align-items: center;
       gap: 7px;
+    }
+
+    .idea-folder-chevron {
+      width: 12px;
+      flex: 0 0 auto;
+      color: var(--muted);
+      font-size: 16px;
+      transform: rotate(0);
+      transition: transform .16s ease;
+    }
+
+    .idea-folder-toggle[aria-expanded="true"] .idea-folder-chevron {
+      transform: rotate(90deg);
+    }
+
+    .idea-folder-symbol {
+      position: relative;
+      width: 15px;
+      height: 11px;
+      flex: 0 0 auto;
+      border-radius: 2px;
+      background: #aab8c4;
+    }
+
+    .idea-folder-symbol::before {
+      content: "";
+      position: absolute;
+      left: 1px;
+      top: -3px;
+      width: 7px;
+      height: 4px;
+      border-radius: 2px 2px 0 0;
+      background: #aab8c4;
+    }
+
+    .idea-folder-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .idea-folder-count {
+      min-width: 22px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      color: var(--muted);
+      background: #edf1f4;
+      font-size: 10px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .idea-folder-documents {
+      display: grid;
+      gap: 6px;
+      padding: 4px 0 2px 12px;
+    }
+
+    .idea-folder-documents[hidden] {
+      display: none;
+    }
+
+    .idea-folder-empty {
+      padding: 8px 10px 10px 26px;
+      color: var(--muted);
+      font-size: 11px;
     }
 
     .idea-document-item {
       width: 100%;
-      min-height: 66px;
-      padding: 10px 11px;
+      min-height: 58px;
+      padding: 8px 9px;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 30px;
+      grid-template-columns: 18px minmax(0, 1fr) 30px;
       align-items: center;
       gap: 8px;
       text-align: left;
       background: white;
+    }
+
+    .idea-document-item[draggable="true"] {
+      cursor: grab;
+    }
+
+    .idea-document-item.dragging {
+      opacity: .45;
+    }
+
+    .idea-document-item.idea-drop-target {
+      border-top: 3px solid var(--brand);
+    }
+
+    .idea-drag-handle {
+      color: #9aa5af;
+      font-size: 15px;
+      line-height: 1;
+      letter-spacing: -3px;
+      user-select: none;
     }
 
     .idea-document-item.active {
@@ -229,6 +438,21 @@
       margin-top: 3px;
       color: var(--muted);
       font-size: 11px;
+    }
+
+    .idea-tags-preview {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-top: 5px;
+    }
+
+    .idea-tag {
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: #f1f3f5;
+      color: var(--muted);
+      font-size: 10px;
     }
 
     .idea-document-delete {
@@ -323,6 +547,83 @@
     .idea-title-input:focus {
       outline: none;
       border-bottom-color: var(--brand);
+    }
+
+    .idea-document-meta {
+      margin: 18px 0 8px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: minmax(180px, .75fr) minmax(260px, 1.25fr);
+      gap: 10px;
+      border: 1px solid #e4e9ee;
+      border-radius: 8px;
+      background: #fafbfd;
+    }
+
+    .idea-document-meta .field {
+      margin: 0;
+    }
+
+    .idea-document-meta input,
+    .idea-document-meta select {
+      min-height: 34px;
+      padding: 6px 8px;
+      font-size: 12px;
+    }
+
+    .idea-source-actions {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 7px;
+    }
+
+    .idea-source-actions a {
+      min-width: 38px;
+      min-height: 34px;
+      padding: 0 9px;
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--brand-dark);
+      text-decoration: none;
+      background: white;
+    }
+
+    .idea-images {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px;
+      margin: 18px 0 2px;
+    }
+
+    .idea-image-card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f5f7f9;
+    }
+
+    .idea-image-card img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      display: block;
+      object-fit: cover;
+    }
+
+    .idea-image-remove {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 28px;
+      min-height: 28px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, .66);
+      color: white;
+      font-size: 18px;
     }
 
     .idea-content {
@@ -609,6 +910,12 @@
       box-shadow: inset 0 0 0 2px var(--brand);
     }
 
+    .day.drop-target,
+    .week-row.drop-target {
+      background: #eaf4ff;
+      box-shadow: inset 0 0 0 2px var(--brand);
+    }
+
     .day-top {
       display: flex;
       align-items: center;
@@ -620,6 +927,20 @@
     .day-number {
       font-weight: 800;
       font-size: 13px;
+    }
+
+    .day-date-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .day-week-number,
+    .week-number-label {
+      color: var(--brand-dark);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .02em;
     }
 
     .mini-add {
@@ -651,6 +972,15 @@
 
     .post:hover {
       border-color: #9db7cf;
+    }
+
+    .post[draggable="true"] {
+      cursor: grab;
+    }
+
+    .post.dragging {
+      opacity: .45;
+      cursor: grabbing;
     }
 
     .post.idea { box-shadow: inset 4px 0 0 #6772e5, 0 4px 12px rgba(17, 35, 52, .05); }
@@ -1234,6 +1564,10 @@
       .idea-title-input {
         font-size: 27px;
       }
+
+      .idea-document-meta {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -1315,6 +1649,26 @@
           </div>
           <button class="primary" id="newIdeaBtn" type="button">+ Nieuw</button>
         </div>
+        <div class="ideas-sidebar-actions">
+          <input id="ideaSearchInput" type="search" placeholder="Zoek in alle ideeën..." aria-label="Zoek in alle ideeën">
+          <details class="idea-organize-panel" id="ideaOrganizePanel">
+            <summary>
+              <span>Document indelen</span>
+              <span class="idea-organize-chevron" aria-hidden="true">›</span>
+            </summary>
+            <div class="idea-organize-body">
+              <label for="ideaFolderSelect">Projectmap</label>
+              <div class="idea-organize-row">
+                <select id="ideaFolderSelect" aria-label="Projectmap van geselecteerd document"></select>
+                <button id="showFolderCreatorBtn" type="button" title="Nieuwe map">+ Map</button>
+              </div>
+              <div class="idea-folder-creator" id="ideaFolderCreator" hidden>
+                <input id="newIdeaFolderName" placeholder="Naam van projectmap">
+                <button class="primary" id="saveIdeaFolderBtn" type="button">Opslaan</button>
+              </div>
+            </div>
+          </details>
+        </div>
         <div class="ideas-list" id="ideasList"></div>
       </aside>
 
@@ -1324,17 +1678,32 @@
             <option value="p">Normale tekst</option>
             <option value="h2">Kop</option>
           </select>
-          <button type="button" data-idea-command="bold" title="Vet" aria-label="Vet">B</button>
+          <button type="button" id="unicodeBoldBtn" title="Selectie omzetten naar 𝐯𝐞𝐭𝐭𝐞 tekst" aria-label="Unicode vet">𝐁</button>
           <button type="button" data-idea-command="italic" title="Cursief" aria-label="Cursief"><em>I</em></button>
           <button type="button" data-idea-command="insertUnorderedList" title="Opsomming" aria-label="Opsomming">• Lijst</button>
           <button type="button" data-idea-command="insertOrderedList" title="Genummerde lijst" aria-label="Genummerde lijst">1. Lijst</button>
+          <button type="button" id="addIdeaImagesBtn" title="Afbeeldingen of screenshots toevoegen">▧ Beeld</button>
           <span class="idea-save-status" id="ideaSaveStatus">Alles opgeslagen</span>
         </div>
 
         <div class="idea-workspace">
           <article class="idea-paper" id="ideaPaper">
-            <input class="idea-title-input" id="ideaTitle" placeholder="Naam van dit ideeën-document" autocomplete="off">
-            <div class="idea-content" id="ideaContent" contenteditable="true" spellcheck="true" aria-label="Ideeën-document"></div>
+            <input class="idea-title-input" id="ideaTitle" placeholder="Naam van dit ideeën-document" autocomplete="off" spellcheck="true" lang="nl">
+            <div class="idea-document-meta">
+              <div class="field">
+                <label for="ideaTagsInput">Tags</label>
+                <input id="ideaTagsInput" placeholder="event, alumni, video" spellcheck="true" lang="nl">
+              </div>
+              <div class="field source-field">
+                <label for="ideaSourceUrl">Bronlink of inspiratie</label>
+                <div class="idea-source-actions">
+                  <input id="ideaSourceUrl" type="url" placeholder="https://..." inputmode="url">
+                  <a id="openIdeaSourceLink" href="#" target="_blank" rel="noopener noreferrer" title="Bron openen" aria-label="Bron openen">↗</a>
+                </div>
+              </div>
+            </div>
+            <div class="idea-images" id="ideaImages"></div>
+            <div class="idea-content" id="ideaContent" contenteditable="true" spellcheck="true" lang="nl" aria-label="Ideeën-document"></div>
           </article>
           <div class="idea-empty-editor" id="ideaEmptyEditor" hidden>
             <div>
@@ -1347,6 +1716,8 @@
       </main>
     </section>
   </div>
+
+  <input type="file" id="ideaImageInput" class="file-input" accept="image/png,image/jpeg,image/webp,image/gif" multiple>
 
   <div class="idea-delete-toast" id="ideaDeleteToast" role="status" aria-live="polite">
     <span>Document verwijderd</span>
@@ -1365,11 +1736,14 @@
           <button type="button" class="composer-close" id="closeDrawerBtn" title="Sluiten" aria-label="Sluiten">x</button>
         </div>
 
-        <textarea id="postText" class="composer-textarea" placeholder="Waar wilt u het over hebben?"></textarea>
+        <textarea id="postText" class="composer-textarea" placeholder="Waar wilt u het over hebben?" spellcheck="true" lang="nl"></textarea>
 
         <div id="attachmentPreview" class="attachment-preview" aria-live="polite"></div>
 
         <div class="composer-tools" aria-label="LinkedIn opties">
+          <button type="button" class="tool-button" id="unicodePostBoldBtn" title="Geselecteerde tekst vet maken" aria-label="Unicode vet">
+            𝐁<span class="tool-label">Vet</span>
+          </button>
           <button type="button" class="tool-button active" data-media="tekst" title="Alleen tekst" aria-label="Alleen tekst">
             Aa<span class="tool-label">Tekst</span>
           </button>
@@ -1390,7 +1764,7 @@
         <div class="planner-strip">
           <div class="field">
             <label for="postTitle">Interne titel</label>
-            <input id="postTitle" required placeholder="Bijv. Klantcase automatisering">
+            <input id="postTitle" required placeholder="Bijv. Klantcase automatisering" spellcheck="true" lang="nl">
           </div>
           <div class="field">
             <label for="postDate">Datum</label>
@@ -1411,7 +1785,7 @@
           </div>
           <div class="field feedback-field">
             <label for="postNotes">Feedback / punten voor de post</label>
-            <textarea id="postNotes" placeholder="Voeg hier feedback, aandachtspunten of informatie voor de post toe. Dit wordt niet in de post zelf getoond."></textarea>
+            <textarea id="postNotes" placeholder="Voeg hier feedback, aandachtspunten of informatie voor de post toe. Dit wordt niet in de post zelf getoond." spellcheck="true" lang="nl"></textarea>
           </div>
         </div>
       </div>
@@ -1431,6 +1805,8 @@
   <script>
     const storageKey = "linkedin-post-planner-v1";
     const ideasStorageKey = "linkedin-ideas-documents-v1";
+    const ideaFoldersStorageKey = "linkedin-idea-folders-v1";
+    const collapsedIdeaFoldersStorageKey = "linkedin-collapsed-idea-folders-v1";
     const activeIdeaStorageKey = "linkedin-active-idea-v1";
     const deletedIdeasStorageKey = "linkedin-deleted-ideas-v1";
     const ideaRowType = "__idea_document__";
@@ -1445,9 +1821,14 @@
     const mediaLabels = { tekst: "Tekst", foto: "Foto", document: "Document", event: "Event", celebrate: "Vieren" };
     const mediaIcons = { tekst: "Aa", foto: "▧", document: "▤", event: "▦", celebrate: "✹" };
     const maxAttachmentSize = 10 * 1024 * 1024;
+    const ideaImageMaxDimension = 1600;
+    const ideaImageQuality = .82;
 
     let posts = loadPosts();
     let ideaDocuments = loadIdeaDocuments();
+    let ideaFolders = loadIdeaFolders();
+    let collapsedIdeaFolders = new Set(loadCollapsedIdeaFolders());
+    let hasSavedIdeaFolderState = localStorage.getItem(collapsedIdeaFoldersStorageKey) !== null;
     let deletedIdeaIds = new Set(loadDeletedIdeaIds());
     ideaDocuments = ideaDocuments.filter(item => !deletedIdeaIds.has(item.id));
     let activeIdeaId = localStorage.getItem(activeIdeaStorageKey) || ideaDocuments[0]?.id || "";
@@ -1461,6 +1842,9 @@
     let pendingIdeaSync = [];
     let recentlyDeletedIdea = null;
     let ideaToastTimer = null;
+    let draggedPostId = "";
+    let suppressPostClick = false;
+    let draggedIdeaId = "";
 
     const root = document.getElementById("calendarRoot");
     const periodTitle = document.getElementById("periodTitle");
@@ -1484,6 +1868,14 @@
     const ideaContent = document.getElementById("ideaContent");
     const ideaSaveStatus = document.getElementById("ideaSaveStatus");
     const ideaDeleteToast = document.getElementById("ideaDeleteToast");
+    const ideaSearchInput = document.getElementById("ideaSearchInput");
+    const ideaFolderSelect = document.getElementById("ideaFolderSelect");
+    const ideaOrganizePanel = document.getElementById("ideaOrganizePanel");
+    const ideaTagsInput = document.getElementById("ideaTagsInput");
+    const ideaSourceUrl = document.getElementById("ideaSourceUrl");
+    const openIdeaSourceLink = document.getElementById("openIdeaSourceLink");
+    const ideaImageInput = document.getElementById("ideaImageInput");
+    const ideaImages = document.getElementById("ideaImages");
 
     document.getElementById("prevBtn").addEventListener("click", () => movePeriod(-1));
     document.getElementById("nextBtn").addEventListener("click", () => movePeriod(1));
@@ -1497,6 +1889,20 @@
     document.getElementById("newIdeaBtn").addEventListener("click", createIdeaDocument);
     document.getElementById("emptyNewIdeaBtn").addEventListener("click", createIdeaDocument);
     document.getElementById("undoIdeaDeleteBtn").addEventListener("click", undoIdeaDelete);
+    document.getElementById("unicodePostBoldBtn").addEventListener("mousedown", event => {
+      event.preventDefault();
+      applyUnicodeBoldToPost();
+    });
+    document.getElementById("showFolderCreatorBtn").addEventListener("click", toggleIdeaFolderCreator);
+    document.getElementById("saveIdeaFolderBtn").addEventListener("click", createIdeaFolder);
+    document.getElementById("addIdeaImagesBtn").addEventListener("click", () => {
+      ideaImageInput.value = "";
+      ideaImageInput.click();
+    });
+    document.getElementById("unicodeBoldBtn").addEventListener("mousedown", event => {
+      event.preventDefault();
+      applyUnicodeBoldToSelection();
+    });
     document.getElementById("monthViewBtn").addEventListener("click", () => setView("month"));
     document.getElementById("weekViewBtn").addEventListener("click", () => setView("week"));
     document.getElementById("closeDrawerBtn").addEventListener("click", closeEditor);
@@ -1526,6 +1932,45 @@
       render();
     });
 
+    root.addEventListener("dragstart", event => {
+      const card = event.target.closest("[data-post-id]");
+      if (!card) return;
+      draggedPostId = card.dataset.postId;
+      suppressPostClick = true;
+      card.classList.add("dragging");
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData("text/post-id", draggedPostId);
+    });
+
+    root.addEventListener("dragover", event => {
+      const target = event.target.closest("[data-drop-date]");
+      if (!target || !draggedPostId) return;
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "move";
+      root.querySelectorAll(".drop-target").forEach(element => {
+        if (element !== target) element.classList.remove("drop-target");
+      });
+      target.classList.add("drop-target");
+    });
+
+    root.addEventListener("drop", event => {
+      const target = event.target.closest("[data-drop-date]");
+      if (!target || !draggedPostId) return;
+      event.preventDefault();
+      const postId = event.dataTransfer.getData("text/post-id") || draggedPostId;
+      movePostToDate(postId, target.dataset.dropDate);
+      draggedPostId = "";
+      setTimeout(() => { suppressPostClick = false; }, 120);
+    });
+
+    root.addEventListener("dragend", () => {
+      draggedPostId = "";
+      root.querySelectorAll(".dragging, .drop-target").forEach(element => {
+        element.classList.remove("dragging", "drop-target");
+      });
+      setTimeout(() => { suppressPostClick = false; }, 120);
+    });
+
     ideasList.addEventListener("click", event => {
       const deleteButton = event.target.closest("[data-delete-idea]");
       if (deleteButton) {
@@ -1533,12 +1978,81 @@
         deleteIdeaDocument(deleteButton.dataset.deleteIdea);
         return;
       }
+      const folderButton = event.target.closest("[data-toggle-idea-folder]");
+      if (folderButton) {
+        const folder = decodeURIComponent(folderButton.dataset.toggleIdeaFolder);
+        const isExpanded = folderButton.getAttribute("aria-expanded") === "true";
+        setIdeaFolderCollapsed(folder, isExpanded);
+        return;
+      }
       const item = event.target.closest("[data-idea-id]");
       if (item) selectIdeaDocument(item.dataset.ideaId);
     });
 
-    [ideaTitle, ideaContent].forEach(element => {
+    ideasList.addEventListener("dragstart", event => {
+      const item = event.target.closest("[data-idea-id]");
+      if (!item || event.target.closest("button")) return;
+      draggedIdeaId = item.dataset.ideaId;
+      item.classList.add("dragging");
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData("text/idea-id", draggedIdeaId);
+    });
+
+    ideasList.addEventListener("dragover", event => {
+      if (!draggedIdeaId) return;
+      const folderTarget = event.target.closest("[data-folder-drop]");
+      const documentTarget = event.target.closest("[data-idea-id]");
+      if (!folderTarget && (!documentTarget || documentTarget.dataset.ideaId === draggedIdeaId)) return;
+      event.preventDefault();
+      ideasList.querySelectorAll(".idea-drop-target, .idea-folder-drop-target").forEach(element => {
+        element.classList.remove("idea-drop-target", "idea-folder-drop-target");
+      });
+      if (documentTarget && documentTarget.dataset.ideaId !== draggedIdeaId) {
+        documentTarget.classList.add("idea-drop-target");
+      } else if (folderTarget) {
+        folderTarget.classList.add("idea-folder-drop-target");
+      }
+    });
+
+    ideasList.addEventListener("drop", event => {
+      if (!draggedIdeaId) return;
+      const documentTarget = event.target.closest("[data-idea-id]");
+      const folderTarget = event.target.closest("[data-folder-drop]");
+      if (!documentTarget && !folderTarget) return;
+      event.preventDefault();
+      if (documentTarget && documentTarget.dataset.ideaId !== draggedIdeaId) {
+        reorderIdeaDocuments(draggedIdeaId, documentTarget.dataset.ideaId);
+      } else if (folderTarget) {
+        moveIdeaDocumentToFolder(
+          draggedIdeaId,
+          decodeURIComponent(folderTarget.dataset.folderDrop)
+        );
+      }
+      draggedIdeaId = "";
+    });
+
+    ideasList.addEventListener("dragend", () => {
+      draggedIdeaId = "";
+      ideasList.querySelectorAll(".dragging, .idea-drop-target, .idea-folder-drop-target").forEach(element => {
+        element.classList.remove("dragging", "idea-drop-target", "idea-folder-drop-target");
+      });
+    });
+
+    [ideaTitle, ideaContent, ideaTagsInput, ideaSourceUrl].forEach(element => {
       element.addEventListener("input", scheduleIdeaSave);
+    });
+    ideaFolderSelect.addEventListener("change", () => {
+      expandIdeaFolder(ideaFolderSelect.value);
+      scheduleIdeaSave();
+    });
+    ideaSearchInput.addEventListener("input", () => renderIdeaDocuments({ preserveEditor: true }));
+    ideaImageInput.addEventListener("change", handleIdeaImageSelection);
+    ideaImages.addEventListener("click", event => {
+      const button = event.target.closest("[data-remove-idea-image]");
+      if (button) removeIdeaImage(button.dataset.removeIdeaImage);
+    });
+    document.getElementById("newIdeaFolderName").addEventListener("keydown", event => {
+      if (event.key === "Enter") createIdeaFolder();
     });
 
     document.querySelectorAll("[data-idea-command]").forEach(button => {
@@ -1593,11 +2107,117 @@
       if (!saved) return [];
       try {
         const parsed = JSON.parse(saved);
-        return Array.isArray(parsed) ? parsed : [];
+        return Array.isArray(parsed)
+          ? parsed.map((item, index) => normalizeIdeaDocument(item, index))
+          : [];
       } catch (error) {
         console.warn("Lokale ideeën konden niet worden gelezen:", error);
         return [];
       }
+    }
+
+    function normalizeIdeaDocument(item, index = 0) {
+      return {
+        ...item,
+        folder: item.folder || "Algemeen",
+        tags: Array.isArray(item.tags) ? item.tags : [],
+        sourceUrl: item.sourceUrl || "",
+        images: Array.isArray(item.images) ? item.images : [],
+        order: Number.isFinite(item.order) ? item.order : index
+      };
+    }
+
+    function loadIdeaFolders() {
+      let savedFolders = [];
+      try {
+        savedFolders = JSON.parse(localStorage.getItem(ideaFoldersStorageKey) || "[]");
+      } catch (error) {
+        console.warn("Ideeënmappen konden niet worden gelezen:", error);
+      }
+      const documentFolders = ideaDocuments.map(item => item.folder).filter(Boolean);
+      return Array.from(new Set(["Algemeen", ...(Array.isArray(savedFolders) ? savedFolders : []), ...documentFolders]));
+    }
+
+    function saveIdeaFolders() {
+      localStorage.setItem(ideaFoldersStorageKey, JSON.stringify(ideaFolders));
+    }
+
+    function loadCollapsedIdeaFolders() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(collapsedIdeaFoldersStorageKey) || "[]");
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (error) {
+        console.warn("Mapweergave kon niet worden gelezen:", error);
+        return [];
+      }
+    }
+
+    function saveCollapsedIdeaFolders() {
+      localStorage.setItem(
+        collapsedIdeaFoldersStorageKey,
+        JSON.stringify(Array.from(collapsedIdeaFolders))
+      );
+    }
+
+    function setIdeaFolderCollapsed(folder, collapsed) {
+      if (collapsed) collapsedIdeaFolders.add(folder);
+      else collapsedIdeaFolders.delete(folder);
+      hasSavedIdeaFolderState = true;
+      saveCollapsedIdeaFolders();
+      renderIdeaDocuments({ preserveEditor: true });
+    }
+
+    function expandIdeaFolder(folder) {
+      if (!folder) return;
+      collapsedIdeaFolders.delete(folder);
+      hasSavedIdeaFolderState = true;
+      saveCollapsedIdeaFolders();
+    }
+
+    function sortIdeaFolderNames(a, b) {
+      if (a === "Algemeen") return -1;
+      if (b === "Algemeen") return 1;
+      return a.localeCompare(b, "nl");
+    }
+
+    function toggleIdeaFolderCreator() {
+      const creator = document.getElementById("ideaFolderCreator");
+      creator.hidden = !creator.hidden;
+      if (!creator.hidden) document.getElementById("newIdeaFolderName").focus();
+    }
+
+    function createIdeaFolder() {
+      const input = document.getElementById("newIdeaFolderName");
+      const name = input.value.trim();
+      if (!name) return;
+      const existingFolder = ideaFolders.find(folder => folder.toLowerCase() === name.toLowerCase());
+      const folderName = existingFolder || name;
+      if (!existingFolder) {
+        ideaFolders.push(folderName);
+        saveIdeaFolders();
+      }
+      input.value = "";
+      document.getElementById("ideaFolderCreator").hidden = true;
+      ideaOrganizePanel.open = true;
+      expandIdeaFolder(folderName);
+      renderIdeaFolderOptions(folderName);
+      if (activeIdeaId) {
+        ideaFolderSelect.value = folderName;
+        scheduleIdeaSave();
+      } else {
+        renderIdeaDocuments({ preserveEditor: true });
+      }
+    }
+
+    function renderIdeaFolderOptions(documentFolder) {
+      const currentDocumentFolder = documentFolder || ideaFolderSelect.value || "Algemeen";
+      const options = ideaFolders
+        .slice()
+        .sort(sortIdeaFolderNames)
+        .map(folder => `<option value="${escapeHtml(folder)}">${escapeHtml(folder)}</option>`)
+        .join("");
+      ideaFolderSelect.innerHTML = options;
+      ideaFolderSelect.value = ideaFolders.includes(currentDocumentFolder) ? currentDocumentFolder : "Algemeen";
     }
 
     function loadDeletedIdeaIds() {
@@ -1643,15 +2263,23 @@
     function createIdeaDocument() {
       persistActiveIdea(true);
       const now = new Date().toISOString();
+      const activeDocument = ideaDocuments.find(item => item.id === activeIdeaId);
+      const selectedFolder = ideaFolderSelect.value || activeDocument?.folder || "Algemeen";
       const documentItem = {
         id: crypto.randomUUID(),
         title: "Nieuw ideeën-document",
         content: "",
+        folder: selectedFolder,
+        tags: [],
+        sourceUrl: "",
+        images: [],
+        order: ideaDocuments.length ? Math.min(...ideaDocuments.map(item => item.order || 0)) - 1 : 0,
         createdAt: now,
         updatedAt: now
       };
       ideaDocuments.unshift(documentItem);
       activeIdeaId = documentItem.id;
+      expandIdeaFolder(selectedFolder);
       localStorage.setItem(activeIdeaStorageKey, activeIdeaId);
       saveIdeaDocuments();
       renderIdeaDocuments();
@@ -1669,6 +2297,38 @@
       activeIdeaId = id;
       localStorage.setItem(activeIdeaStorageKey, activeIdeaId);
       renderIdeaDocuments();
+    }
+
+    function reorderIdeaDocuments(sourceId, targetId) {
+      if (!sourceId || !targetId || sourceId === targetId) return;
+      const sourceIndex = ideaDocuments.findIndex(item => item.id === sourceId);
+      const targetIndex = ideaDocuments.findIndex(item => item.id === targetId);
+      if (sourceIndex < 0 || targetIndex < 0) return;
+      const targetFolder = ideaDocuments[targetIndex].folder || "Algemeen";
+      const [movedDocument] = ideaDocuments.splice(sourceIndex, 1);
+      const adjustedTarget = sourceIndex < targetIndex ? targetIndex - 1 : targetIndex;
+      movedDocument.folder = targetFolder;
+      ideaDocuments.splice(adjustedTarget, 0, movedDocument);
+      const now = new Date().toISOString();
+      ideaDocuments.forEach((item, index) => {
+        item.order = index;
+        item.updatedAt = now;
+      });
+      expandIdeaFolder(targetFolder);
+      saveIdeaDocuments();
+      renderIdeaDocuments({ preserveEditor: true });
+      ideaDocuments.forEach(item => upsertRemoteIdea(item));
+    }
+
+    function moveIdeaDocumentToFolder(id, folder) {
+      const documentItem = ideaDocuments.find(item => item.id === id);
+      if (!documentItem || !folder || documentItem.folder === folder) return;
+      documentItem.folder = folder;
+      documentItem.updatedAt = new Date().toISOString();
+      expandIdeaFolder(folder);
+      saveIdeaDocuments();
+      renderIdeaDocuments({ preserveEditor: true });
+      upsertRemoteIdea(documentItem);
     }
 
     function deleteIdeaDocument(id) {
@@ -1723,34 +2383,105 @@
         activeIdeaId = ideaDocuments[0]?.id || "";
       }
       if (!activeIdeaId && ideaDocuments.length) activeIdeaId = ideaDocuments[0].id;
-      localStorage.setItem(activeIdeaStorageKey, activeIdeaId);
-
-      ideaCount.textContent = ideaDocuments.length;
-      ideasList.innerHTML = ideaDocuments.length
-        ? ideaDocuments
-            .slice()
-            .sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""))
-            .map(item => `
-              <div class="idea-document-item${item.id === activeIdeaId ? " active" : ""}" data-idea-id="${item.id}" role="button" tabindex="0">
-                <div>
-                  <span class="idea-document-title">${escapeHtml(item.title || "Naamloos document")}</span>
-                  <span class="idea-document-date">${formatIdeaDate(item.updatedAt)}</span>
-                </div>
-                <button class="idea-document-delete" type="button" data-delete-idea="${item.id}" title="Document verwijderen" aria-label="Document verwijderen">×</button>
-              </div>
-            `).join("")
-        : `<div class="ideas-empty-list">Nog geen documenten. Maak een document aan om je eerste ideeën te verzamelen.</div>`;
-
       const activeDocument = ideaDocuments.find(item => item.id === activeIdeaId);
+      renderIdeaFolderOptions(activeDocument?.folder || "Algemeen");
+      const query = ideaSearchInput.value.trim().toLowerCase();
+      const visibleDocuments = ideaDocuments
+        .filter(item => {
+          const plainText = htmlToPlainText(item.content || "");
+          const haystack = [item.title, item.folder, (item.tags || []).join(" "), item.sourceUrl, plainText]
+            .join(" ")
+            .toLowerCase();
+          return !query || haystack.includes(query);
+        })
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+      localStorage.setItem(activeIdeaStorageKey, activeIdeaId);
+      ideaCount.textContent = visibleDocuments.length;
+      const folderNames = Array.from(new Set([
+        "Algemeen",
+        ...ideaFolders,
+        ...ideaDocuments.map(item => item.folder || "Algemeen")
+      ])).sort(sortIdeaFolderNames);
+      if (!hasSavedIdeaFolderState) {
+        const initiallyOpenFolder = activeDocument?.folder || "Algemeen";
+        folderNames.forEach(folder => {
+          if (folder !== initiallyOpenFolder) collapsedIdeaFolders.add(folder);
+        });
+        hasSavedIdeaFolderState = true;
+        saveCollapsedIdeaFolders();
+      }
+      const folderGroups = folderNames
+        .map(folder => ({
+          folder,
+          documents: visibleDocuments.filter(item => (item.folder || "Algemeen") === folder)
+        }))
+        .filter(group => !query || group.documents.length);
+
+      ideasList.innerHTML = folderGroups.length
+        ? folderGroups.map(group => {
+            const folderKey = encodeURIComponent(group.folder);
+            const isCollapsed = query
+              ? false
+              : collapsedIdeaFolders.has(group.folder);
+            return `
+              <section class="idea-folder-group">
+                <button
+                  class="idea-folder-toggle"
+                  type="button"
+                  data-toggle-idea-folder="${folderKey}"
+                  data-folder-drop="${folderKey}"
+                  aria-expanded="${!isCollapsed}"
+                >
+                  <span class="idea-folder-heading">
+                    <span class="idea-folder-chevron" aria-hidden="true">›</span>
+                    <span class="idea-folder-symbol" aria-hidden="true"></span>
+                    <span class="idea-folder-name">${escapeHtml(group.folder)}</span>
+                  </span>
+                  <span class="idea-folder-count">${group.documents.length}</span>
+                </button>
+                <div class="idea-folder-documents"${isCollapsed ? " hidden" : ""}>
+                  ${group.documents.length
+                    ? group.documents.map(renderIdeaDocumentItem).join("")
+                    : `<div class="idea-folder-empty">Nog geen documenten in deze map</div>`}
+                </div>
+              </section>
+            `;
+          }).join("")
+        : `<div class="ideas-empty-list">Geen ideeën gevonden met deze zoekopdracht.</div>`;
+
       ideaPaper.hidden = !activeDocument;
       ideaEmptyEditor.hidden = Boolean(activeDocument);
+      ideaOrganizePanel.hidden = !activeDocument;
       document.getElementById("ideaFormatbar").hidden = !activeDocument;
 
       if (activeDocument && !options.preserveEditor) {
         ideaTitle.value = activeDocument.title || "";
         ideaContent.innerHTML = sanitizeIdeaHtml(activeDocument.content || "");
+        ideaTagsInput.value = (activeDocument.tags || []).join(", ");
+        ideaSourceUrl.value = activeDocument.sourceUrl || "";
         ideaSaveStatus.textContent = "Alles opgeslagen";
       }
+      updateIdeaSourceLink(activeDocument?.sourceUrl || "");
+      renderIdeaImages(activeDocument);
+    }
+
+    function renderIdeaDocumentItem(item) {
+      return `
+        <div class="idea-document-item${item.id === activeIdeaId ? " active" : ""}" data-idea-id="${item.id}" role="button" tabindex="0" draggable="true">
+          <span class="idea-drag-handle" title="Verslepen">⋮⋮</span>
+          <div>
+            <span class="idea-document-title">${escapeHtml(item.title || "Naamloos document")}</span>
+            <span class="idea-document-date">${formatIdeaDate(item.updatedAt)}</span>
+            ${(item.tags || []).length ? `
+              <span class="idea-tags-preview">
+                ${item.tags.slice(0, 3).map(tag => `<span class="idea-tag">#${escapeHtml(tag)}</span>`).join("")}
+              </span>
+            ` : ""}
+          </div>
+          <button class="idea-document-delete" type="button" data-delete-idea="${item.id}" title="Document verwijderen" aria-label="Document verwijderen">×</button>
+        </div>
+      `;
     }
 
     function scheduleIdeaSave() {
@@ -1773,6 +2504,14 @@
       if (!activeDocument || ideaPaper.hidden) return null;
       activeDocument.title = ideaTitle.value.trim() || "Naamloos document";
       activeDocument.content = sanitizeIdeaHtml(ideaContent.innerHTML);
+      activeDocument.folder = ideaFolderSelect.value || "Algemeen";
+      activeDocument.tags = Array.from(new Set(
+        ideaTagsInput.value
+          .split(",")
+          .map(tag => tag.trim().replace(/^#/, ""))
+          .filter(Boolean)
+      ));
+      activeDocument.sourceUrl = normalizeWebUrl(ideaSourceUrl.value);
       activeDocument.updatedAt = new Date().toISOString();
       if (saveIdeaDocuments()) {
         renderIdeaDocuments({ preserveEditor: true });
@@ -1796,7 +2535,9 @@
         }
       });
       return {
-        documents: Array.from(merged.values()).sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || "")),
+        documents: Array.from(merged.values())
+          .map((item, index) => normalizeIdeaDocument(item, index))
+          .sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
         pending
       };
     }
@@ -1827,6 +2568,161 @@
 
     function isIdeaEditorFocused() {
       return document.activeElement === ideaTitle || document.activeElement === ideaContent;
+    }
+
+    function htmlToPlainText(html) {
+      const container = document.createElement("div");
+      container.innerHTML = html || "";
+      return container.textContent || "";
+    }
+
+    function normalizeWebUrl(value) {
+      const trimmed = (value || "").trim();
+      if (!trimmed) return "";
+      const candidate = /^[a-z][a-z0-9+.-]*:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+      try {
+        return new URL(candidate).href;
+      } catch (error) {
+        return trimmed;
+      }
+    }
+
+    function updateIdeaSourceLink(value) {
+      const url = normalizeWebUrl(value);
+      const valid = /^https?:\/\//i.test(url);
+      openIdeaSourceLink.href = valid ? url : "#";
+      openIdeaSourceLink.hidden = !valid;
+    }
+
+    async function handleIdeaImageSelection() {
+      const activeDocument = ideaDocuments.find(item => item.id === activeIdeaId);
+      const files = Array.from(ideaImageInput.files || []);
+      if (!activeDocument || !files.length) return;
+      ideaSaveStatus.textContent = "Beelden verwerken...";
+      try {
+        const images = [];
+        for (const file of files) {
+          if (!file.type.startsWith("image/")) continue;
+          if (file.size > maxAttachmentSize) {
+            alert(`${file.name} is groter dan ${Math.round(maxAttachmentSize / 1024 / 1024)} MB en is overgeslagen.`);
+            continue;
+          }
+          images.push(await compressIdeaImage(file));
+        }
+        activeDocument.images = [...(activeDocument.images || []), ...images];
+        activeDocument.updatedAt = new Date().toISOString();
+        if (saveIdeaDocuments()) {
+          renderIdeaImages(activeDocument);
+          renderIdeaDocuments({ preserveEditor: true });
+          const synced = await upsertRemoteIdea(activeDocument);
+          ideaSaveStatus.textContent = synced === false ? "Lokaal opgeslagen" : "Alles opgeslagen";
+        }
+      } catch (error) {
+        console.warn("Afbeelding verwerken mislukt:", error);
+        ideaSaveStatus.textContent = "Beeld toevoegen mislukt";
+        alert("Een van de afbeeldingen kon niet worden toegevoegd.");
+      }
+    }
+
+    function compressIdeaImage(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = reject;
+        reader.onload = () => {
+          const image = new Image();
+          image.onerror = reject;
+          image.onload = () => {
+            const scale = Math.min(1, ideaImageMaxDimension / Math.max(image.width, image.height));
+            const width = Math.max(1, Math.round(image.width * scale));
+            const height = Math.max(1, Math.round(image.height * scale));
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            const context = canvas.getContext("2d");
+            context.drawImage(image, 0, 0, width, height);
+            let outputType = file.type === "image/png" ? "image/png" : "image/jpeg";
+            let dataUrl = canvas.toDataURL(outputType, ideaImageQuality);
+            if (dataUrl.length > 2000000) {
+              outputType = "image/jpeg";
+              dataUrl = canvas.toDataURL(outputType, .76);
+            }
+            resolve({
+              id: crypto.randomUUID(),
+              name: file.name,
+              type: outputType,
+              size: Math.round((dataUrl.length * 3) / 4),
+              dataUrl
+            });
+          };
+          image.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function renderIdeaImages(activeDocument) {
+      const images = activeDocument?.images || [];
+      ideaImages.innerHTML = images.map(image => `
+        <figure class="idea-image-card">
+          <img src="${image.dataUrl}" alt="${escapeHtml(image.name || "Idee-afbeelding")}">
+          <button class="idea-image-remove" type="button" data-remove-idea-image="${image.id}" aria-label="Afbeelding verwijderen">×</button>
+        </figure>
+      `).join("");
+      ideaImages.hidden = !images.length;
+    }
+
+    function removeIdeaImage(imageId) {
+      const activeDocument = ideaDocuments.find(item => item.id === activeIdeaId);
+      if (!activeDocument) return;
+      activeDocument.images = (activeDocument.images || []).filter(image => image.id !== imageId);
+      activeDocument.updatedAt = new Date().toISOString();
+      saveIdeaDocuments();
+      renderIdeaImages(activeDocument);
+      upsertRemoteIdea(activeDocument);
+    }
+
+    function applyUnicodeBoldToSelection() {
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0 || !selection.toString()) {
+        alert("Selecteer eerst de tekst die je vet wilt maken.");
+        return;
+      }
+      const range = selection.getRangeAt(0);
+      if (!ideaContent.contains(range.commonAncestorContainer)) {
+        alert("Selecteer tekst in het ideeën-document.");
+        return;
+      }
+      const replacement = document.createTextNode(toUnicodeBold(selection.toString()));
+      range.deleteContents();
+      range.insertNode(replacement);
+      range.setStartAfter(replacement);
+      range.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      scheduleIdeaSave();
+    }
+
+    function toUnicodeBold(value) {
+      return Array.from(value).map(character => {
+        const code = character.codePointAt(0);
+        if (code >= 65 && code <= 90) return String.fromCodePoint(0x1D400 + code - 65);
+        if (code >= 97 && code <= 122) return String.fromCodePoint(0x1D41A + code - 97);
+        if (code >= 48 && code <= 57) return String.fromCodePoint(0x1D7CE + code - 48);
+        return character;
+      }).join("");
+    }
+
+    function applyUnicodeBoldToPost() {
+      const textarea = document.getElementById("postText");
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      if (start === end) {
+        alert("Selecteer eerst de tekst die je vet wilt maken.");
+        return;
+      }
+      const replacement = toUnicodeBold(textarea.value.slice(start, end));
+      textarea.setRangeText(replacement, start, end, "end");
+      textarea.focus();
     }
 
     async function initSupabase() {
@@ -1877,6 +2773,8 @@
         .map(rowToIdeaDocument);
       const mergedIdeas = mergeIdeaDocuments(ideaDocuments, remoteIdeas);
       ideaDocuments = mergedIdeas.documents;
+      ideaFolders = Array.from(new Set(["Algemeen", ...ideaFolders, ...ideaDocuments.map(item => item.folder).filter(Boolean)]));
+      saveIdeaFolders();
       pendingIdeaSync = mergedIdeas.pending;
       savePosts();
       saveIdeaDocuments();
@@ -1945,7 +2843,14 @@
         time: "09:00",
         type: ideaRowType,
         media: "tekst",
-        attachment: null,
+        attachment: {
+          kind: "idea_document_meta",
+          folder: documentItem.folder || "Algemeen",
+          tags: documentItem.tags || [],
+          sourceUrl: documentItem.sourceUrl || "",
+          images: documentItem.images || [],
+          order: documentItem.order ?? 0
+        },
         status: "idea",
         hook: "",
         text: documentItem.content || "",
@@ -1956,13 +2861,19 @@
 
     function rowToIdeaDocument(row) {
       const timestamp = row.updated_at || `${row.date || toDateInput(new Date())}T00:00:00.000Z`;
-      return {
+      const metadata = row.attachment?.kind === "idea_document_meta" ? row.attachment : {};
+      return normalizeIdeaDocument({
         id: row.id,
         title: row.title || "Naamloos document",
         content: row.text || "",
+        folder: metadata.folder || "Algemeen",
+        tags: metadata.tags || [],
+        sourceUrl: metadata.sourceUrl || "",
+        images: metadata.images || [],
+        order: Number.isFinite(metadata.order) ? metadata.order : 0,
         createdAt: row.date ? `${row.date}T00:00:00.000Z` : timestamp,
         updatedAt: timestamp
-      };
+      });
     }
 
     function postToRow(post) {
@@ -2019,7 +2930,7 @@
       const year = cursor.getFullYear();
       const month = cursor.getMonth();
       periodTitle.textContent = `${capitalize(monthNames[month])} ${year}`;
-      periodHint.textContent = "Maandoverzicht";
+      periodHint.textContent = "Maandoverzicht · weeknummers bij maandag";
 
       const first = new Date(year, month, 1);
       const start = startOfWeek(first);
@@ -2043,7 +2954,9 @@
       });
 
       root.querySelectorAll("[data-post-id]").forEach(card => {
-        card.addEventListener("click", () => openEditor(posts.find(post => post.id === card.dataset.postId)));
+        card.addEventListener("click", () => {
+          if (!suppressPostClick) openEditor(posts.find(post => post.id === card.dataset.postId));
+        });
       });
     }
 
@@ -2053,9 +2966,12 @@
       const outside = day.getMonth() !== activeMonth ? " outside" : "";
       const today = dateKey === todayKey ? " today" : "";
       return `
-        <div class="day${outside}${today}">
+        <div class="day${outside}${today}" data-drop-date="${dateKey}">
           <div class="day-top">
-            <span class="day-number">${day.getDate()}</span>
+            <div class="day-date-meta">
+              <span class="day-number">${day.getDate()}</span>
+              ${day.getDay() === 1 ? `<span class="day-week-number">W${getISOWeek(day)}</span>` : ""}
+            </div>
             <button class="mini-add" data-add-date="${dateKey}" title="Post toevoegen" aria-label="Post toevoegen">+</button>
           </div>
           ${dayPosts.map(renderPostCard).join("")}
@@ -2068,7 +2984,7 @@
       const days = Array.from({ length: 7 }, (_, index) => addDays(start, index));
       const end = days[6];
       periodTitle.textContent = `${start.getDate()} ${monthNames[start.getMonth()]} - ${end.getDate()} ${monthNames[end.getMonth()]}`;
-      periodHint.textContent = "Weekoverzicht";
+      periodHint.textContent = `Week ${getISOWeek(start)}`;
 
       root.innerHTML = `
         <section class="week-list">
@@ -2076,9 +2992,9 @@
             const dateKey = toDateInput(day);
             const dayPosts = filteredPosts().filter(post => post.date === dateKey).sort(sortByTime);
             return `
-              <div class="week-row">
+              <div class="week-row" data-drop-date="${dateKey}">
                 <div class="week-date">
-                  <span class="subtle">${weekdays[(day.getDay() + 6) % 7]}</span>
+                  <span class="subtle">${weekdays[(day.getDay() + 6) % 7]} · <span class="week-number-label">W${getISOWeek(day)}</span></span>
                   <strong>${day.getDate()} ${monthNames[day.getMonth()]}</strong>
                   <button data-add-date="${dateKey}">Toevoegen</button>
                 </div>
@@ -2096,7 +3012,9 @@
       });
 
       root.querySelectorAll("[data-post-id]").forEach(card => {
-        card.addEventListener("click", () => openEditor(posts.find(post => post.id === card.dataset.postId)));
+        card.addEventListener("click", () => {
+          if (!suppressPostClick) openEditor(posts.find(post => post.id === card.dataset.postId));
+        });
       });
     }
 
@@ -2106,7 +3024,7 @@
       const media = post.media || "tekst";
       const mediaBlock = renderMediaBlock(post, media);
       return `
-        <article class="post ${post.status}" data-post-id="${post.id}" tabindex="0">
+        <article class="post ${post.status}" data-post-id="${post.id}" tabindex="0" draggable="true">
           <div class="post-copy">${copy}</div>
           ${mediaBlock}
           <div class="post-title">${title}</div>
@@ -2193,6 +3111,19 @@
       if (savePosts()) {
         deleteRemotePost(id);
         closeEditor();
+        render();
+      }
+    }
+
+    function movePostToDate(id, date) {
+      const post = posts.find(item => item.id === id);
+      if (!post || !date || post.date === date) {
+        render();
+        return;
+      }
+      post.date = date;
+      if (savePosts()) {
+        upsertRemotePost(post);
         render();
       }
     }
@@ -2327,6 +3258,14 @@
       const day = (copy.getDay() + 6) % 7;
       copy.setDate(copy.getDate() - day);
       return copy;
+    }
+
+    function getISOWeek(date) {
+      const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+      const day = utcDate.getUTCDay() || 7;
+      utcDate.setUTCDate(utcDate.getUTCDate() + 4 - day);
+      const yearStart = new Date(Date.UTC(utcDate.getUTCFullYear(), 0, 1));
+      return Math.ceil((((utcDate - yearStart) / 86400000) + 1) / 7);
     }
 
     function addDays(date, amount) {
