@@ -102,6 +102,44 @@
       justify-content: flex-end;
     }
 
+    .app-nav {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+    }
+
+    .app-nav button {
+      min-height: 32px;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .app-nav button.active {
+      background: white;
+      color: var(--ink);
+      box-shadow: 0 2px 8px rgba(17, 35, 52, .09);
+    }
+
+    .page-view {
+      display: none;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .page-view.active.layout {
+      display: grid;
+    }
+
+    .page-view.active.ideas-page {
+      display: grid;
+    }
+
     .primary {
       background: var(--brand);
       border-color: var(--brand);
@@ -127,6 +165,244 @@
       grid-template-columns: 280px minmax(0, 1fr);
       min-height: 0;
       overflow: hidden;
+    }
+
+    .ideas-page {
+      grid-template-columns: 280px minmax(0, 1fr);
+      background: #e9eef3;
+    }
+
+    .ideas-sidebar {
+      min-height: 0;
+      padding: 18px;
+      overflow: auto;
+      border-right: 1px solid var(--line);
+      background: #f8fafc;
+    }
+
+    .ideas-sidebar-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .ideas-sidebar h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .ideas-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .idea-document-item {
+      width: 100%;
+      min-height: 66px;
+      padding: 10px 11px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 30px;
+      align-items: center;
+      gap: 8px;
+      text-align: left;
+      background: white;
+    }
+
+    .idea-document-item.active {
+      border-color: var(--brand);
+      box-shadow: inset 3px 0 0 var(--brand);
+    }
+
+    .idea-document-title {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .idea-document-date {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .idea-document-delete {
+      width: 30px;
+      min-height: 30px;
+      padding: 0;
+      border: 0;
+      color: var(--muted);
+      background: transparent;
+      font-size: 18px;
+    }
+
+    .idea-document-delete:hover {
+      color: var(--red);
+      background: #fff1f0;
+    }
+
+    .ideas-empty-list {
+      padding: 14px 4px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .idea-editor-shell {
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      overflow: hidden;
+    }
+
+    .idea-formatbar {
+      min-height: 58px;
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--line);
+      background: white;
+      z-index: 2;
+    }
+
+    .idea-formatbar button,
+    .idea-formatbar select {
+      min-height: 34px;
+      width: auto;
+      padding: 0 10px;
+      background: white;
+    }
+
+    .idea-formatbar button {
+      min-width: 36px;
+      font-weight: 800;
+    }
+
+    .idea-save-status {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .idea-workspace {
+      min-height: 0;
+      overflow: auto;
+      padding: 36px;
+      background: #e9eef3;
+    }
+
+    .idea-paper {
+      width: min(820px, 100%);
+      min-height: calc(100vh - 190px);
+      margin: 0 auto;
+      padding: 64px 76px 90px;
+      border: 1px solid #dfe5eb;
+      background: white;
+      box-shadow: 0 18px 45px rgba(17, 35, 52, .12);
+    }
+
+    .idea-title-input {
+      min-height: 52px;
+      padding: 0 0 16px;
+      border: 0;
+      border-bottom: 1px solid #e7ebef;
+      border-radius: 0;
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1.15;
+    }
+
+    .idea-title-input:focus {
+      outline: none;
+      border-bottom-color: var(--brand);
+    }
+
+    .idea-content {
+      min-height: 560px;
+      padding-top: 26px;
+      color: #202832;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 17px;
+      line-height: 1.65;
+      outline: none;
+    }
+
+    .idea-content:empty::before {
+      content: "Schrijf hier je ideeën. Gebruik koppen en lijsten om alles geordend te houden...";
+      color: #9aa5af;
+      pointer-events: none;
+    }
+
+    .idea-content h2 {
+      margin: 1.3em 0 .45em;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      font-size: 24px;
+      line-height: 1.25;
+    }
+
+    .idea-content p {
+      margin: 0 0 1em;
+    }
+
+    .idea-content ul,
+    .idea-content ol {
+      padding-left: 28px;
+    }
+
+    .idea-empty-editor {
+      min-height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 30px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .idea-empty-editor div {
+      max-width: 360px;
+    }
+
+    .idea-delete-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      z-index: 45;
+      min-width: 290px;
+      padding: 11px 12px 11px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      border-radius: 8px;
+      background: #17212b;
+      color: white;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, .24);
+      transform: translate(-50%, 18px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .16s ease, transform .16s ease;
+    }
+
+    .idea-delete-toast.visible {
+      transform: translate(-50%, 0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .idea-delete-toast button {
+      min-height: 32px;
+      border-color: rgba(255, 255, 255, .28);
+      background: transparent;
+      color: white;
+      font-weight: 800;
     }
 
     .sidebar {
@@ -825,6 +1101,15 @@
         justify-content: flex-start;
       }
 
+      .app-nav {
+        order: 3;
+        width: 100%;
+      }
+
+      .app-nav button {
+        flex: 1;
+      }
+
       .layout {
         grid-template-columns: 1fr;
         overflow: visible;
@@ -840,6 +1125,34 @@
 
       .main {
         overflow: visible;
+      }
+
+      .page-view {
+        overflow: visible;
+      }
+
+      .ideas-page {
+        grid-template-columns: 1fr;
+      }
+
+      .ideas-sidebar {
+        max-height: 260px;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .idea-editor-shell {
+        overflow: visible;
+      }
+
+      .idea-workspace {
+        overflow: visible;
+        padding: 20px;
+      }
+
+      .idea-paper {
+        min-height: 700px;
+        padding: 46px 48px 70px;
       }
 
       .stats {
@@ -900,6 +1213,27 @@
       .drawer-actions {
         align-items: flex-start;
       }
+
+      .idea-formatbar {
+        padding: 9px 12px;
+      }
+
+      .idea-save-status {
+        width: 100%;
+        margin-left: 0;
+      }
+
+      .idea-workspace {
+        padding: 10px;
+      }
+
+      .idea-paper {
+        padding: 34px 24px 56px;
+      }
+
+      .idea-title-input {
+        font-size: 27px;
+      }
     }
   </style>
 </head>
@@ -913,15 +1247,19 @@
           <div class="subtle">Plan, schrijf en bewaak je contentritme</div>
         </div>
       </div>
+      <nav class="app-nav" aria-label="Hoofdnavigatie">
+        <button id="plannerNavBtn" class="active" type="button">Planner</button>
+        <button id="ideasNavBtn" type="button">Ideeën</button>
+      </nav>
       <div class="toolbar">
-        <button class="icon-button" id="prevBtn" title="Vorige periode" aria-label="Vorige periode">&lt;</button>
-        <button id="todayBtn">Vandaag</button>
-        <button class="icon-button" id="nextBtn" title="Volgende periode" aria-label="Volgende periode">&gt;</button>
+        <button class="icon-button planner-only" id="prevBtn" title="Vorige periode" aria-label="Vorige periode">&lt;</button>
+        <button class="planner-only" id="todayBtn">Vandaag</button>
+        <button class="icon-button planner-only" id="nextBtn" title="Volgende periode" aria-label="Volgende periode">&gt;</button>
         <button class="primary" id="newPostBtn">Nieuwe post</button>
       </div>
     </header>
 
-    <div class="layout">
+    <div class="layout page-view active" id="plannerPage">
       <aside class="sidebar">
         <section>
           <h2>Overzicht</h2>
@@ -967,6 +1305,52 @@
         <div class="calendar-wrap" id="calendarRoot"></div>
       </main>
     </div>
+
+    <section class="ideas-page page-view" id="ideasPage" aria-label="Ideeën">
+      <aside class="ideas-sidebar">
+        <div class="ideas-sidebar-head">
+          <div>
+            <h2>Ideeën</h2>
+            <div class="subtle"><span id="ideaCount">0</span> documenten</div>
+          </div>
+          <button class="primary" id="newIdeaBtn" type="button">+ Nieuw</button>
+        </div>
+        <div class="ideas-list" id="ideasList"></div>
+      </aside>
+
+      <main class="idea-editor-shell">
+        <div class="idea-formatbar" id="ideaFormatbar">
+          <select id="ideaBlockType" aria-label="Tekststijl">
+            <option value="p">Normale tekst</option>
+            <option value="h2">Kop</option>
+          </select>
+          <button type="button" data-idea-command="bold" title="Vet" aria-label="Vet">B</button>
+          <button type="button" data-idea-command="italic" title="Cursief" aria-label="Cursief"><em>I</em></button>
+          <button type="button" data-idea-command="insertUnorderedList" title="Opsomming" aria-label="Opsomming">• Lijst</button>
+          <button type="button" data-idea-command="insertOrderedList" title="Genummerde lijst" aria-label="Genummerde lijst">1. Lijst</button>
+          <span class="idea-save-status" id="ideaSaveStatus">Alles opgeslagen</span>
+        </div>
+
+        <div class="idea-workspace">
+          <article class="idea-paper" id="ideaPaper">
+            <input class="idea-title-input" id="ideaTitle" placeholder="Naam van dit ideeën-document" autocomplete="off">
+            <div class="idea-content" id="ideaContent" contenteditable="true" spellcheck="true" aria-label="Ideeën-document"></div>
+          </article>
+          <div class="idea-empty-editor" id="ideaEmptyEditor" hidden>
+            <div>
+              <h2>Nog geen ideeën-document</h2>
+              <p>Maak een document aan en orden je ideeën met koppen, tekst en lijsten.</p>
+              <button class="primary" id="emptyNewIdeaBtn" type="button">Nieuw document</button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </section>
+  </div>
+
+  <div class="idea-delete-toast" id="ideaDeleteToast" role="status" aria-live="polite">
+    <span>Document verwijderd</span>
+    <button id="undoIdeaDeleteBtn" type="button">Ongedaan maken</button>
   </div>
 
   <div class="drawer-backdrop" id="backdrop"></div>
@@ -1046,6 +1430,10 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const storageKey = "linkedin-post-planner-v1";
+    const ideasStorageKey = "linkedin-ideas-documents-v1";
+    const activeIdeaStorageKey = "linkedin-active-idea-v1";
+    const deletedIdeasStorageKey = "linkedin-deleted-ideas-v1";
+    const ideaRowType = "__idea_document__";
     const supabaseConfig = {
   url: "https://husduywspstzzuasafpn.supabase.co",
   anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1c2R1eXdzcHN0enp1YXNhZnBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5MzQ4MTksImV4cCI6MjA5OTUxMDgxOX0.xLa_vFZZXDnGensthB5BBNU2n6ypHmV3gohcA-30iRA",
@@ -1059,12 +1447,20 @@
     const maxAttachmentSize = 10 * 1024 * 1024;
 
     let posts = loadPosts();
+    let ideaDocuments = loadIdeaDocuments();
+    let deletedIdeaIds = new Set(loadDeletedIdeaIds());
+    ideaDocuments = ideaDocuments.filter(item => !deletedIdeaIds.has(item.id));
+    let activeIdeaId = localStorage.getItem(activeIdeaStorageKey) || ideaDocuments[0]?.id || "";
     let cursor = new Date();
     let view = "month";
     let filter = "all";
     let currentAttachment = null;
     let supabaseClient = null;
     let remoteReady = false;
+    let ideaSaveTimer = null;
+    let pendingIdeaSync = [];
+    let recentlyDeletedIdea = null;
+    let ideaToastTimer = null;
 
     const root = document.getElementById("calendarRoot");
     const periodTitle = document.getElementById("periodTitle");
@@ -1078,11 +1474,29 @@
     const photoInput = document.getElementById("photoInput");
     const documentInput = document.getElementById("documentInput");
     const attachmentPreview = document.getElementById("attachmentPreview");
+    const plannerPage = document.getElementById("plannerPage");
+    const ideasPage = document.getElementById("ideasPage");
+    const ideasList = document.getElementById("ideasList");
+    const ideaCount = document.getElementById("ideaCount");
+    const ideaPaper = document.getElementById("ideaPaper");
+    const ideaEmptyEditor = document.getElementById("ideaEmptyEditor");
+    const ideaTitle = document.getElementById("ideaTitle");
+    const ideaContent = document.getElementById("ideaContent");
+    const ideaSaveStatus = document.getElementById("ideaSaveStatus");
+    const ideaDeleteToast = document.getElementById("ideaDeleteToast");
 
     document.getElementById("prevBtn").addEventListener("click", () => movePeriod(-1));
     document.getElementById("nextBtn").addEventListener("click", () => movePeriod(1));
     document.getElementById("todayBtn").addEventListener("click", () => { cursor = new Date(); render(); });
-    document.getElementById("newPostBtn").addEventListener("click", () => openEditor({ date: toDateInput(new Date()) }));
+    document.getElementById("newPostBtn").addEventListener("click", () => {
+      setAppPage("planner");
+      openEditor({ date: toDateInput(new Date()) });
+    });
+    document.getElementById("plannerNavBtn").addEventListener("click", () => setAppPage("planner"));
+    document.getElementById("ideasNavBtn").addEventListener("click", () => setAppPage("ideas"));
+    document.getElementById("newIdeaBtn").addEventListener("click", createIdeaDocument);
+    document.getElementById("emptyNewIdeaBtn").addEventListener("click", createIdeaDocument);
+    document.getElementById("undoIdeaDeleteBtn").addEventListener("click", undoIdeaDelete);
     document.getElementById("monthViewBtn").addEventListener("click", () => setView("month"));
     document.getElementById("weekViewBtn").addEventListener("click", () => setView("week"));
     document.getElementById("closeDrawerBtn").addEventListener("click", closeEditor);
@@ -1112,7 +1526,39 @@
       render();
     });
 
+    ideasList.addEventListener("click", event => {
+      const deleteButton = event.target.closest("[data-delete-idea]");
+      if (deleteButton) {
+        event.stopPropagation();
+        deleteIdeaDocument(deleteButton.dataset.deleteIdea);
+        return;
+      }
+      const item = event.target.closest("[data-idea-id]");
+      if (item) selectIdeaDocument(item.dataset.ideaId);
+    });
+
+    [ideaTitle, ideaContent].forEach(element => {
+      element.addEventListener("input", scheduleIdeaSave);
+    });
+
+    document.querySelectorAll("[data-idea-command]").forEach(button => {
+      button.addEventListener("mousedown", event => {
+        event.preventDefault();
+        ideaContent.focus();
+        document.execCommand(button.dataset.ideaCommand, false);
+        scheduleIdeaSave();
+      });
+    });
+
+    document.getElementById("ideaBlockType").addEventListener("change", event => {
+      ideaContent.focus();
+      document.execCommand("formatBlock", false, event.target.value);
+      scheduleIdeaSave();
+      event.target.value = "p";
+    });
+
     render();
+    renderIdeaDocuments();
     initSupabase();
 
     function loadPosts() {
@@ -1142,6 +1588,247 @@
       }
     }
 
+    function loadIdeaDocuments() {
+      const saved = localStorage.getItem(ideasStorageKey);
+      if (!saved) return [];
+      try {
+        const parsed = JSON.parse(saved);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (error) {
+        console.warn("Lokale ideeën konden niet worden gelezen:", error);
+        return [];
+      }
+    }
+
+    function loadDeletedIdeaIds() {
+      const saved = localStorage.getItem(deletedIdeasStorageKey);
+      if (!saved) return [];
+      try {
+        const parsed = JSON.parse(saved);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (error) {
+        console.warn("Verwijderde ideeën konden niet worden gelezen:", error);
+        return [];
+      }
+    }
+
+    function saveDeletedIdeaIds() {
+      localStorage.setItem(deletedIdeasStorageKey, JSON.stringify(Array.from(deletedIdeaIds)));
+    }
+
+    function saveIdeaDocuments() {
+      try {
+        localStorage.setItem(ideasStorageKey, JSON.stringify(ideaDocuments));
+        return true;
+      } catch (error) {
+        ideaSaveStatus.textContent = "Opslaan mislukt";
+        alert("De ideeën konden niet lokaal worden opgeslagen.");
+        return false;
+      }
+    }
+
+    function setAppPage(page) {
+      const showIdeas = page === "ideas";
+      if (!showIdeas && ideasPage.classList.contains("active")) persistActiveIdea(true);
+      plannerPage.classList.toggle("active", !showIdeas);
+      ideasPage.classList.toggle("active", showIdeas);
+      document.getElementById("plannerNavBtn").classList.toggle("active", !showIdeas);
+      document.getElementById("ideasNavBtn").classList.toggle("active", showIdeas);
+      document.querySelectorAll(".planner-only").forEach(element => {
+        element.hidden = showIdeas;
+      });
+      if (showIdeas) renderIdeaDocuments();
+    }
+
+    function createIdeaDocument() {
+      persistActiveIdea(true);
+      const now = new Date().toISOString();
+      const documentItem = {
+        id: crypto.randomUUID(),
+        title: "Nieuw ideeën-document",
+        content: "",
+        createdAt: now,
+        updatedAt: now
+      };
+      ideaDocuments.unshift(documentItem);
+      activeIdeaId = documentItem.id;
+      localStorage.setItem(activeIdeaStorageKey, activeIdeaId);
+      saveIdeaDocuments();
+      renderIdeaDocuments();
+      setAppPage("ideas");
+      upsertRemoteIdea(documentItem);
+      requestAnimationFrame(() => {
+        ideaTitle.focus();
+        ideaTitle.select();
+      });
+    }
+
+    function selectIdeaDocument(id) {
+      if (id === activeIdeaId) return;
+      persistActiveIdea(true);
+      activeIdeaId = id;
+      localStorage.setItem(activeIdeaStorageKey, activeIdeaId);
+      renderIdeaDocuments();
+    }
+
+    function deleteIdeaDocument(id) {
+      const documentItem = ideaDocuments.find(item => item.id === id);
+      if (!documentItem) return;
+      if (id === activeIdeaId) {
+        clearTimeout(ideaSaveTimer);
+        ideaSaveTimer = null;
+      }
+      recentlyDeletedIdea = { ...documentItem };
+      deletedIdeaIds.add(id);
+      saveDeletedIdeaIds();
+      ideaDocuments = ideaDocuments.filter(item => item.id !== id);
+      activeIdeaId = ideaDocuments[0]?.id || "";
+      localStorage.setItem(activeIdeaStorageKey, activeIdeaId);
+      saveIdeaDocuments();
+      renderIdeaDocuments();
+      deleteRemoteIdea(id);
+      showIdeaDeleteToast();
+    }
+
+    function undoIdeaDelete() {
+      if (!recentlyDeletedIdea) return;
+      const documentItem = recentlyDeletedIdea;
+      recentlyDeletedIdea = null;
+      clearTimeout(ideaToastTimer);
+      ideaDeleteToast.classList.remove("visible");
+      deletedIdeaIds.delete(documentItem.id);
+      saveDeletedIdeaIds();
+      if (!ideaDocuments.some(item => item.id === documentItem.id)) {
+        documentItem.updatedAt = new Date().toISOString();
+        ideaDocuments.unshift(documentItem);
+      }
+      activeIdeaId = documentItem.id;
+      localStorage.setItem(activeIdeaStorageKey, activeIdeaId);
+      saveIdeaDocuments();
+      renderIdeaDocuments();
+      upsertRemoteIdea(documentItem);
+    }
+
+    function showIdeaDeleteToast() {
+      clearTimeout(ideaToastTimer);
+      ideaDeleteToast.classList.add("visible");
+      ideaToastTimer = setTimeout(() => {
+        ideaDeleteToast.classList.remove("visible");
+        recentlyDeletedIdea = null;
+      }, 5000);
+    }
+
+    function renderIdeaDocuments(options = {}) {
+      if (activeIdeaId && !ideaDocuments.some(item => item.id === activeIdeaId)) {
+        activeIdeaId = ideaDocuments[0]?.id || "";
+      }
+      if (!activeIdeaId && ideaDocuments.length) activeIdeaId = ideaDocuments[0].id;
+      localStorage.setItem(activeIdeaStorageKey, activeIdeaId);
+
+      ideaCount.textContent = ideaDocuments.length;
+      ideasList.innerHTML = ideaDocuments.length
+        ? ideaDocuments
+            .slice()
+            .sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""))
+            .map(item => `
+              <div class="idea-document-item${item.id === activeIdeaId ? " active" : ""}" data-idea-id="${item.id}" role="button" tabindex="0">
+                <div>
+                  <span class="idea-document-title">${escapeHtml(item.title || "Naamloos document")}</span>
+                  <span class="idea-document-date">${formatIdeaDate(item.updatedAt)}</span>
+                </div>
+                <button class="idea-document-delete" type="button" data-delete-idea="${item.id}" title="Document verwijderen" aria-label="Document verwijderen">×</button>
+              </div>
+            `).join("")
+        : `<div class="ideas-empty-list">Nog geen documenten. Maak een document aan om je eerste ideeën te verzamelen.</div>`;
+
+      const activeDocument = ideaDocuments.find(item => item.id === activeIdeaId);
+      ideaPaper.hidden = !activeDocument;
+      ideaEmptyEditor.hidden = Boolean(activeDocument);
+      document.getElementById("ideaFormatbar").hidden = !activeDocument;
+
+      if (activeDocument && !options.preserveEditor) {
+        ideaTitle.value = activeDocument.title || "";
+        ideaContent.innerHTML = sanitizeIdeaHtml(activeDocument.content || "");
+        ideaSaveStatus.textContent = "Alles opgeslagen";
+      }
+    }
+
+    function scheduleIdeaSave() {
+      const activeDocument = persistActiveIdea(false);
+      if (!activeDocument) return;
+      ideaSaveStatus.textContent = "Opslaan...";
+      clearTimeout(ideaSaveTimer);
+      ideaSaveTimer = setTimeout(async () => {
+        const savedRemotely = await upsertRemoteIdea(activeDocument);
+        ideaSaveStatus.textContent = savedRemotely === true
+          ? "Alles opgeslagen"
+          : savedRemotely === false
+            ? "Lokaal opgeslagen"
+            : "Opgeslagen in browser";
+      }, 900);
+    }
+
+    function persistActiveIdea(syncRemote) {
+      const activeDocument = ideaDocuments.find(item => item.id === activeIdeaId);
+      if (!activeDocument || ideaPaper.hidden) return null;
+      activeDocument.title = ideaTitle.value.trim() || "Naamloos document";
+      activeDocument.content = sanitizeIdeaHtml(ideaContent.innerHTML);
+      activeDocument.updatedAt = new Date().toISOString();
+      if (saveIdeaDocuments()) {
+        renderIdeaDocuments({ preserveEditor: true });
+        if (syncRemote) {
+          clearTimeout(ideaSaveTimer);
+          ideaSaveTimer = null;
+          upsertRemoteIdea(activeDocument);
+        }
+      }
+      return activeDocument;
+    }
+
+    function mergeIdeaDocuments(localDocuments, remoteDocuments) {
+      const merged = new Map(remoteDocuments.map(item => [item.id, item]));
+      const pending = [];
+      localDocuments.forEach(localDocument => {
+        const remoteDocument = merged.get(localDocument.id);
+        if (!remoteDocument || (localDocument.updatedAt || "") > (remoteDocument.updatedAt || "")) {
+          merged.set(localDocument.id, localDocument);
+          pending.push(localDocument);
+        }
+      });
+      return {
+        documents: Array.from(merged.values()).sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || "")),
+        pending
+      };
+    }
+
+    function sanitizeIdeaHtml(html) {
+      const container = document.createElement("div");
+      container.innerHTML = html || "";
+      const allowed = new Set(["P", "BR", "H2", "UL", "OL", "LI", "STRONG", "B", "EM", "I"]);
+      const dangerous = new Set(["SCRIPT", "STYLE", "IFRAME", "OBJECT", "EMBED", "LINK", "META"]);
+      Array.from(container.querySelectorAll("*")).forEach(element => {
+        if (dangerous.has(element.tagName)) {
+          element.remove();
+          return;
+        }
+        if (!allowed.has(element.tagName)) {
+          element.replaceWith(...Array.from(element.childNodes));
+          return;
+        }
+        Array.from(element.attributes).forEach(attribute => element.removeAttribute(attribute.name));
+      });
+      return container.innerHTML;
+    }
+
+    function formatIdeaDate(value) {
+      const date = value ? new Date(value) : new Date();
+      return date.toLocaleDateString("nl-NL", { day: "numeric", month: "short", year: "numeric" });
+    }
+
+    function isIdeaEditorFocused() {
+      return document.activeElement === ideaTitle || document.activeElement === ideaContent;
+    }
+
     async function initSupabase() {
       const hasConfig = supabaseConfig.url && supabaseConfig.anonKey && !supabaseConfig.anonKey.includes("PASTE_YOUR");
       if (!hasConfig || !window.supabase) return;
@@ -1151,6 +1838,15 @@
       if (!loaded) return;
 
       remoteReady = true;
+      const ideasToDelete = Array.from(deletedIdeaIds);
+      for (const id of ideasToDelete) {
+        await deleteRemoteIdea(id);
+      }
+      const ideasToSync = pendingIdeaSync.slice();
+      pendingIdeaSync = [];
+      for (const documentItem of ideasToSync) {
+        await upsertRemoteIdea(documentItem);
+      }
       supabaseClient
         .channel("linkedin-posts-calendar")
         .on(
@@ -1174,9 +1870,18 @@
         return false;
       }
 
-      posts = (data || []).map(rowToPost);
+      const rows = data || [];
+      posts = rows.filter(row => row.type !== ideaRowType).map(rowToPost);
+      const remoteIdeas = rows
+        .filter(row => row.type === ideaRowType && !deletedIdeaIds.has(row.id))
+        .map(rowToIdeaDocument);
+      const mergedIdeas = mergeIdeaDocuments(ideaDocuments, remoteIdeas);
+      ideaDocuments = mergedIdeas.documents;
+      pendingIdeaSync = mergedIdeas.pending;
       savePosts();
+      saveIdeaDocuments();
       render();
+      renderIdeaDocuments({ preserveEditor: isIdeaEditorFocused() });
       return true;
     }
 
@@ -1201,6 +1906,63 @@
       if (error) {
         alert(`Verwijderen in Supabase lukte niet: ${error.message}`);
       }
+    }
+
+    async function upsertRemoteIdea(documentItem) {
+      if (!remoteReady || !supabaseClient) return null;
+      const { error } = await supabaseClient
+        .from(supabaseConfig.table)
+        .upsert(ideaToRow(documentItem), { onConflict: "id" });
+
+      if (error) {
+        console.warn("Idee synchroniseren mislukt:", error.message);
+        return false;
+      }
+      return true;
+    }
+
+    async function deleteRemoteIdea(id) {
+      if (!remoteReady || !supabaseClient) return null;
+      const { error } = await supabaseClient
+        .from(supabaseConfig.table)
+        .delete()
+        .eq("id", id);
+
+      if (error) {
+        console.warn("Idee verwijderen uit Supabase mislukt:", error.message);
+        return false;
+      }
+      deletedIdeaIds.delete(id);
+      saveDeletedIdeaIds();
+      return true;
+    }
+
+    function ideaToRow(documentItem) {
+      return {
+        id: documentItem.id,
+        title: documentItem.title || "Naamloos document",
+        date: (documentItem.createdAt || new Date().toISOString()).slice(0, 10),
+        time: "09:00",
+        type: ideaRowType,
+        media: "tekst",
+        attachment: null,
+        status: "idea",
+        hook: "",
+        text: documentItem.content || "",
+        goal: "Zichtbaarheid",
+        updated_at: documentItem.updatedAt || new Date().toISOString()
+      };
+    }
+
+    function rowToIdeaDocument(row) {
+      const timestamp = row.updated_at || `${row.date || toDateInput(new Date())}T00:00:00.000Z`;
+      return {
+        id: row.id,
+        title: row.title || "Naamloos document",
+        content: row.text || "",
+        createdAt: row.date ? `${row.date}T00:00:00.000Z` : timestamp,
+        updatedAt: timestamp
+      };
     }
 
     function postToRow(post) {
