@@ -1586,6 +1586,8 @@
         <button id="ideasNavBtn" type="button">Ideeën</button>
       </nav>
       <div class="toolbar">
+        <span id="mediaStatus" class="subtle" role="status" aria-live="polite"></span>
+        <button id="migrateMediaBtn" type="button" title="Maak een back-up en zet bestaande bijlagen over naar foto-opslag">Foto-opslag bijwerken</button>
         <button class="icon-button planner-only" id="prevBtn" title="Vorige periode" aria-label="Vorige periode">&lt;</button>
         <button class="planner-only" id="todayBtn">Vandaag</button>
         <button class="icon-button planner-only" id="nextBtn" title="Volgende periode" aria-label="Volgende periode">&gt;</button>
@@ -1729,7 +1731,7 @@
     <form id="postForm" class="drawer-body">
       <input type="hidden" id="postId">
       <input type="hidden" id="postMedia" value="tekst">
-      <input type="file" id="photoInput" class="file-input" accept="image/png,image/jpeg,image/webp,image/gif">
+      <input type="file" id="photoInput" class="file-input" accept="image/png,image/jpeg,image/webp,image/gif" title="Foto’s worden verkleind tot maximaal 1600 pixels. GIF wordt een stilstaand beeld.">
       <input type="file" id="documentInput" class="file-input" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.csv,.txt,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation">
       <div class="composer">
         <div class="composer-top">
@@ -1739,6 +1741,7 @@
         <textarea id="postText" class="composer-textarea" placeholder="Waar wilt u het over hebben?" spellcheck="true" lang="nl"></textarea>
 
         <div id="attachmentPreview" class="attachment-preview" aria-live="polite"></div>
+        <p class="subtle">Foto’s worden verkleind tot maximaal 1600 pixels. Een GIF wordt een stilstaand beeld.</p>
 
         <div class="composer-tools" aria-label="LinkedIn opties">
           <button type="button" class="tool-button" id="unicodePostBoldBtn" title="Geselecteerde tekst vet maken" aria-label="Unicode vet">
@@ -1802,6 +1805,7 @@
 
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="media-storage.js"></script>
   <script>
     const storageKey = "linkedin-post-planner-v1";
     const ideasStorageKey = "linkedin-ideas-documents-v1";
@@ -1821,8 +1825,12 @@
     const mediaLabels = { tekst: "Tekst", foto: "Foto", document: "Document", event: "Event", celebrate: "Vieren" };
     const mediaIcons = { tekst: "Aa", foto: "▧", document: "▤", event: "▦", celebrate: "✹" };
     const maxAttachmentSize = 10 * 1024 * 1024;
-    const ideaImageMaxDimension = 1600;
-    const ideaImageQuality = .82;
+    let mediaBusy = false;
+    let savingPost = false;
+    let migrationBusy = false;
+    let loadingRemote = null;
+    let mediaSelectionVersion = 0;
+    const pendingIdeaWrites = new Map();
 
     let posts = loadPosts();
     let ideaDocuments = loadIdeaDocuments();
@@ -1908,6 +1916,9 @@
     document.getElementById("closeDrawerBtn").addEventListener("click", closeEditor);
     document.getElementById("cancelBtn").addEventListener("click", closeEditor);
     document.getElementById("saveBtn").addEventListener("click", savePost);
+    document.getElementById("migrateMediaBtn").addEventListener("click", migrateStoredMedia);
+    setInterval(refreshMediaUrls, 30 * 60 * 1000);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshMediaUrls(); });
     document.getElementById("deleteBtn").addEventListener("click", deletePost);
     backdrop.addEventListener("click", closeEditor);
     searchInput.addEventListener("input", render);
@@ -2092,12 +2103,12 @@
   return [];
 }
 
-    function savePosts() {
+    function savePosts(quiet = false) {
       try {
         localStorage.setItem(storageKey, JSON.stringify(posts));
         return true;
       } catch (error) {
-        alert("Opslaan lukt niet omdat de browseropslag vol zit. Verwijder een grote bijlage of kies een kleiner bestand.");
+        if (!quiet) alert("De browseropslag is vol. Gebruik Foto-opslag bijwerken om bestaande bijlagen over te zetten.");
         return false;
       }
     }
@@ -2236,13 +2247,13 @@
       localStorage.setItem(deletedIdeasStorageKey, JSON.stringify(Array.from(deletedIdeaIds)));
     }
 
-    function saveIdeaDocuments() {
+    function saveIdeaDocuments(quiet = false) {
       try {
         localStorage.setItem(ideasStorageKey, JSON.stringify(ideaDocuments));
         return true;
       } catch (error) {
         ideaSaveStatus.textContent = "Opslaan mislukt";
-        alert("De ideeën konden niet lokaal worden opgeslagen.");
+        if (!quiet) alert("De browseropslag is vol. Gebruik Foto-opslag bijwerken om bestaande bijlagen over te zetten.");
         return false;
       }
     }
@@ -2513,13 +2524,15 @@
       ));
       activeDocument.sourceUrl = normalizeWebUrl(ideaSourceUrl.value);
       activeDocument.updatedAt = new Date().toISOString();
-      if (saveIdeaDocuments()) {
-        renderIdeaDocuments({ preserveEditor: true });
-        if (syncRemote) {
-          clearTimeout(ideaSaveTimer);
-          ideaSaveTimer = null;
-          upsertRemoteIdea(activeDocument);
-        }
+      const cached = saveIdeaDocuments(remoteReady);
+      renderIdeaDocuments({ preserveEditor: true });
+      if (syncRemote) {
+        clearTimeout(ideaSaveTimer);
+        ideaSaveTimer = null;
+        upsertRemoteIdea(activeDocument).then(synced => {
+          ideaSaveStatus.textContent = synced === true ? (cached ? "Alles opgeslagen" : "Online opgeslagen · browseropslag vol")
+            : (cached ? "Lokaal opgeslagen · synchroniseren mislukt" : "Opslaan mislukt · houd deze pagina open");
+        });
       }
       return activeDocument;
     }
@@ -2595,76 +2608,44 @@
     }
 
     async function handleIdeaImageSelection() {
+      if (loadingRemote) await loadingRemote;
       const activeDocument = ideaDocuments.find(item => item.id === activeIdeaId);
       const files = Array.from(ideaImageInput.files || []);
-      if (!activeDocument || !files.length) return;
-      ideaSaveStatus.textContent = "Beelden verwerken...";
+      if (!activeDocument || !files.length || mediaBusy || migrationBusy) return;
+      if (!remoteReady) { alert("Foto’s toevoegen kan zodra de online opslag verbonden is."); return; }
+      persistActiveIdea(true);
+      mediaBusy = true;
+      document.getElementById("addIdeaImagesBtn").disabled = true;
+      ideaSaveStatus.textContent = "Foto’s verkleinen en uploaden…";
       try {
-        const images = [];
+        // Commit each successful file, so a failure on file 2 never loses file 1.
         for (const file of files) {
           if (!file.type.startsWith("image/")) continue;
-          if (file.size > maxAttachmentSize) {
-            alert(`${file.name} is groter dan ${Math.round(maxAttachmentSize / 1024 / 1024)} MB en is overgeslagen.`);
-            continue;
-          }
-          images.push(await compressIdeaImage(file));
-        }
-        activeDocument.images = [...(activeDocument.images || []), ...images];
-        activeDocument.updatedAt = new Date().toISOString();
-        if (saveIdeaDocuments()) {
-          renderIdeaImages(activeDocument);
-          renderIdeaDocuments({ preserveEditor: true });
+          const uploaded = { ...await PlannerMedia.upload(file), id: crypto.randomUUID() };
+          if (!ideaDocuments.includes(activeDocument)) throw new Error("Het idee is verwijderd; de foto is niet meer gekoppeld.");
+          activeDocument.images = [...(activeDocument.images || []), uploaded];
+          activeDocument.updatedAt = new Date().toISOString();
+          const cached = saveIdeaDocuments(true);
           const synced = await upsertRemoteIdea(activeDocument);
-          ideaSaveStatus.textContent = synced === false ? "Lokaal opgeslagen" : "Alles opgeslagen";
+          if (activeIdeaId === activeDocument.id) renderIdeaImages(activeDocument);
+          if (synced !== true) throw new Error(cached ? "Foto lokaal bewaard, maar online opslaan is mislukt. Probeer opnieuw op te slaan." : "Online opslaan is mislukt. Houd deze pagina open en probeer opnieuw op te slaan.");
         }
+        ideaSaveStatus.textContent = "Foto’s online opgeslagen";
       } catch (error) {
-        console.warn("Afbeelding verwerken mislukt:", error);
-        ideaSaveStatus.textContent = "Beeld toevoegen mislukt";
-        alert("Een van de afbeeldingen kon niet worden toegevoegd.");
+        ideaSaveStatus.textContent = "Foto toevoegen niet afgerond";
+        alert(error.message);
+      } finally {
+        mediaBusy = false;
+        document.getElementById("addIdeaImagesBtn").disabled = false;
+        ideaImageInput.value = "";
       }
-    }
-
-    function compressIdeaImage(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onerror = reject;
-        reader.onload = () => {
-          const image = new Image();
-          image.onerror = reject;
-          image.onload = () => {
-            const scale = Math.min(1, ideaImageMaxDimension / Math.max(image.width, image.height));
-            const width = Math.max(1, Math.round(image.width * scale));
-            const height = Math.max(1, Math.round(image.height * scale));
-            const canvas = document.createElement("canvas");
-            canvas.width = width;
-            canvas.height = height;
-            const context = canvas.getContext("2d");
-            context.drawImage(image, 0, 0, width, height);
-            let outputType = file.type === "image/png" ? "image/png" : "image/jpeg";
-            let dataUrl = canvas.toDataURL(outputType, ideaImageQuality);
-            if (dataUrl.length > 2000000) {
-              outputType = "image/jpeg";
-              dataUrl = canvas.toDataURL(outputType, .76);
-            }
-            resolve({
-              id: crypto.randomUUID(),
-              name: file.name,
-              type: outputType,
-              size: Math.round((dataUrl.length * 3) / 4),
-              dataUrl
-            });
-          };
-          image.src = reader.result;
-        };
-        reader.readAsDataURL(file);
-      });
     }
 
     function renderIdeaImages(activeDocument) {
       const images = activeDocument?.images || [];
       ideaImages.innerHTML = images.map(image => `
         <figure class="idea-image-card">
-          <img src="${image.dataUrl}" alt="${escapeHtml(image.name || "Idee-afbeelding")}">
+          ${PlannerMedia.source(image) ? `<img src="${escapeHtml(PlannerMedia.source(image))}" alt="${escapeHtml(image.name || "Idee-afbeelding")}">` : `<p class="subtle">Foto tijdelijk niet beschikbaar</p>`}
           <button class="idea-image-remove" type="button" data-remove-idea-image="${image.id}" aria-label="Afbeelding verwijderen">×</button>
         </figure>
       `).join("");
@@ -2730,6 +2711,7 @@
       if (!hasConfig || !window.supabase) return;
 
       supabaseClient = window.supabase.createClient(supabaseConfig.url, supabaseConfig.anonKey);
+      PlannerMedia.configure(supabaseClient);
       const loaded = await loadRemotePosts();
       if (!loaded) return;
 
@@ -2754,7 +2736,13 @@
     }
 
     async function loadRemotePosts() {
-      if (!supabaseClient) return false;
+      if (!supabaseClient || migrationBusy || savingPost || mediaBusy) return false;
+      if (loadingRemote) return loadingRemote;
+      loadingRemote = readRemotePosts();
+      try { return await loadingRemote; } finally { loadingRemote = null; }
+    }
+
+    async function readRemotePosts() {
       const { data, error } = await supabaseClient
         .from(supabaseConfig.table)
         .select("*")
@@ -2767,7 +2755,9 @@
       }
 
       const rows = data || [];
-      posts = rows.filter(row => row.type !== ideaRowType).map(rowToPost);
+      const remotePosts = rows.filter(row => row.type !== ideaRowType).map(rowToPost);
+      const remoteIds = new Set(remotePosts.map(post => post.id));
+      posts = [...remotePosts, ...posts.filter(post => !remoteIds.has(post.id))];
       const remoteIdeas = rows
         .filter(row => row.type === ideaRowType && !deletedIdeaIds.has(row.id))
         .map(rowToIdeaDocument);
@@ -2776,26 +2766,27 @@
       ideaFolders = Array.from(new Set(["Algemeen", ...ideaFolders, ...ideaDocuments.map(item => item.folder).filter(Boolean)]));
       saveIdeaFolders();
       pendingIdeaSync = mergedIdeas.pending;
-      savePosts();
-      saveIdeaDocuments();
+      savePosts(true);
+      saveIdeaDocuments(true);
+      await refreshMediaUrls(false);
       render();
       renderIdeaDocuments({ preserveEditor: isIdeaEditorFocused() });
       return true;
     }
 
     async function upsertRemotePost(post) {
-      if (!remoteReady || !supabaseClient) return;
-      const { error } = await supabaseClient
-        .from(supabaseConfig.table)
-        .upsert(postToRow(post), { onConflict: "id" });
-
-      if (error) {
-        alert(`Opslaan in Supabase lukte niet: ${error.message}`);
-      }
+      if (!remoteReady || !supabaseClient) return false;
+      try {
+        const { error } = await supabaseClient.from(supabaseConfig.table)
+          .upsert(postToRow(post), { onConflict: "id" });
+        if (error) { console.warn("Post opslaan mislukt:", error.message); return false; }
+        return true;
+      } catch (error) { console.warn(error); return false; }
     }
 
     async function deleteRemotePost(id) {
-      if (!remoteReady || !supabaseClient) return;
+      if (!remoteReady || !supabaseClient) return false;
+      try {
       const { error } = await supabaseClient
         .from(supabaseConfig.table)
         .delete()
@@ -2803,20 +2794,26 @@
 
       if (error) {
         alert(`Verwijderen in Supabase lukte niet: ${error.message}`);
+        return false;
       }
+      return true;
+      } catch (error) { alert("Online verwijderen is mislukt. Probeer opnieuw."); return false; }
     }
 
     async function upsertRemoteIdea(documentItem) {
       if (!remoteReady || !supabaseClient) return null;
-      const { error } = await supabaseClient
-        .from(supabaseConfig.table)
-        .upsert(ideaToRow(documentItem), { onConflict: "id" });
-
-      if (error) {
-        console.warn("Idee synchroniseren mislukt:", error.message);
-        return false;
-      }
-      return true;
+      const row = JSON.parse(JSON.stringify(ideaToRow(documentItem)));
+      const previous = pendingIdeaWrites.get(row.id) || Promise.resolve();
+      const request = previous.then(async () => {
+        try {
+          const { error } = await supabaseClient.from(supabaseConfig.table).upsert(row, { onConflict: "id" });
+          if (error) { console.warn("Idee synchroniseren mislukt:", error.message); return false; }
+          return true;
+        } catch (error) { console.warn(error); return false; }
+      });
+      pendingIdeaWrites.set(row.id, request);
+      try { return await request; }
+      finally { if (pendingIdeaWrites.get(row.id) === request) pendingIdeaWrites.delete(row.id); }
     }
 
     async function deleteRemoteIdea(id) {
@@ -3048,6 +3045,8 @@
     }
 
     function openEditor(post) {
+      if (mediaBusy || savingPost || migrationBusy) return;
+      mediaSelectionVersion++;
       const editing = Boolean(post.id);
       document.getElementById("postId").value = post.id || "";
       document.getElementById("postTitle").value = post.title || "";
@@ -3068,6 +3067,8 @@
     }
 
     function closeEditor() {
+      if (mediaBusy || savingPost) return;
+      mediaSelectionVersion++;
       drawer.classList.remove("open");
       backdrop.classList.remove("open");
       drawer.setAttribute("aria-hidden", "true");
@@ -3076,8 +3077,9 @@
       renderAttachmentPreview();
     }
 
-    function savePost() {
-      if (!form.reportValidity()) return;
+    async function savePost() {
+      if (mediaBusy || savingPost || migrationBusy || !form.reportValidity()) return;
+      if (loadingRemote) await loadingRemote;
       const id = document.getElementById("postId").value || crypto.randomUUID();
       const existingPost = posts.find(item => item.id === id);
       const post = {
@@ -3094,38 +3096,57 @@
         goal: existingPost?.goal || "Zichtbaarheid"
       };
 
-      const index = posts.findIndex(item => item.id === id);
-      if (index >= 0) posts[index] = post;
-      else posts.push(post);
-      if (savePosts()) {
-        upsertRemotePost(post);
-        closeEditor();
-        render();
+      savingPost = true;
+      setComposerBusy(true);
+      let saved = false;
+      try {
+        if (remoteReady && !await upsertRemotePost(post)) {
+          alert("Online opslaan is mislukt. Je invoer blijft open; probeer opnieuw.");
+          return;
+        }
+        const previous = posts.slice();
+        const index = posts.findIndex(item => item.id === id);
+        if (index >= 0) posts[index] = post;
+        else posts.push(post);
+        const cached = savePosts(remoteReady);
+        if (!cached && !remoteReady) { posts = previous; return; }
+        document.getElementById("mediaStatus").textContent = remoteReady
+          ? (cached ? "Online opgeslagen" : "Online opgeslagen · browseropslag vol") : "Lokaal opgeslagen";
+        saved = true;
+      } finally {
+        savingPost = false;
+        setComposerBusy(false);
+        if (saved) { closeEditor(); render(); }
       }
     }
 
-    function deletePost() {
+    async function deletePost() {
+      if (mediaBusy || savingPost || migrationBusy) return;
       const id = document.getElementById("postId").value;
       if (!id) return;
+      if (remoteReady && !await deleteRemotePost(id)) return;
+      const previous = posts;
       posts = posts.filter(post => post.id !== id);
-      if (savePosts()) {
-        deleteRemotePost(id);
+      const cached = savePosts(remoteReady);
+      if (cached || remoteReady) {
         closeEditor();
         render();
-      }
+      } else posts = previous;
     }
 
-    function movePostToDate(id, date) {
+    async function movePostToDate(id, date) {
+      if (mediaBusy || savingPost || migrationBusy) return;
       const post = posts.find(item => item.id === id);
       if (!post || !date || post.date === date) {
         render();
         return;
       }
+      const previousDate = post.date;
+      const next = { ...post, date };
+      if (remoteReady && !await upsertRemotePost(next)) { alert("Online verplaatsen is mislukt. Probeer opnieuw."); render(); return; }
       post.date = date;
-      if (savePosts()) {
-        upsertRemotePost(post);
-        render();
-      }
+      if (!savePosts(remoteReady) && !remoteReady) post.date = previousDate;
+      render();
     }
 
     function movePeriod(direction) {
@@ -3149,7 +3170,7 @@
     }
 
     function handleMediaChoice(media) {
-      setMedia(media);
+      if (mediaBusy || savingPost || migrationBusy) return;
       if (media === "foto") {
         photoInput.value = "";
         photoInput.click();
@@ -3157,32 +3178,44 @@
         documentInput.value = "";
         documentInput.click();
       } else if (media !== "foto" && media !== "document") {
+        setMedia(media);
         currentAttachment = null;
         renderAttachmentPreview();
       }
     }
 
-    function handleFileSelection(input, media) {
-      const file = input.files && input.files[0];
-      if (!file) return;
-      if (file.size > maxAttachmentSize) {
-        alert("Dit bestand is groter dan 10 MB. Kies een kleinere versie, zodat de planner snel blijft.");
-        input.value = "";
-        return;
-      }
+    function setComposerBusy(busy) {
+      form.inert = busy;
+      document.getElementById("saveBtn").disabled = busy;
+      document.getElementById("deleteBtn").disabled = busy;
+      document.getElementById("cancelBtn").disabled = busy;
+      document.querySelectorAll("[data-media]").forEach(button => { button.disabled = busy; });
+    }
 
-      const reader = new FileReader();
-      reader.addEventListener("load", () => {
-        currentAttachment = {
-          name: file.name,
-          type: file.type || "application/octet-stream",
-          size: file.size,
-          dataUrl: reader.result
-        };
+    async function handleFileSelection(input, media) {
+      const file = input.files && input.files[0];
+      if (!file || mediaBusy || savingPost) return;
+      if (!remoteReady) { alert("Foto’s toevoegen kan zodra de online opslag verbonden is."); input.value = ""; return; }
+      const version = mediaSelectionVersion;
+      mediaBusy = true;
+      setComposerBusy(true);
+      document.getElementById("mediaStatus").textContent = "Bestand verwerken en uploaden…";
+      try {
+        const uploaded = await PlannerMedia.upload(file, { image: media === "foto" });
+        if (version !== mediaSelectionVersion) return;
+        currentAttachment = uploaded;
         setMedia(media);
         renderAttachmentPreview();
-      });
-      reader.readAsDataURL(file);
+        document.getElementById("mediaStatus").textContent = media === "foto"
+          ? "Foto gereed · " + formatBytes(file.size) + " → " + formatBytes(uploaded.size) : "Bestand geüpload";
+      } catch (error) {
+        document.getElementById("mediaStatus").textContent = "Upload niet afgerond";
+        alert(error.message);
+      } finally {
+        mediaBusy = false;
+        setComposerBusy(false);
+        input.value = "";
+      }
     }
 
     function renderAttachmentPreview() {
@@ -3197,7 +3230,7 @@
       attachmentPreview.classList.toggle("image-preview", (currentAttachment.type || "").startsWith("image/"));
       if ((currentAttachment.type || "").startsWith("image/")) {
         attachmentPreview.innerHTML = `
-          <img class="attachment-image" src="${currentAttachment.dataUrl}" alt="${escapeHtml(currentAttachment.name)}">
+          ${PlannerMedia.source(currentAttachment) ? `<img class="attachment-image" src="${escapeHtml(PlannerMedia.source(currentAttachment))}" alt="${escapeHtml(currentAttachment.name)}">` : `<p class="subtle">Foto tijdelijk niet beschikbaar</p>`}
           <button type="button" class="attachment-remove image-remove js-remove-attachment" aria-label="Bijlage verwijderen">x</button>
         `;
       } else {
@@ -3222,8 +3255,9 @@
 
     function renderMediaBlock(post, media) {
       const attachment = post.attachment;
+      if (attachment && (attachment.type || "").startsWith("image/") && !PlannerMedia.source(attachment)) return `<div class="post-media">Foto tijdelijk niet beschikbaar</div>`;
       if (attachment && (attachment.type || "").startsWith("image/")) {
-        return `<div class="post-media image-media"><img src="${attachment.dataUrl}" alt="${escapeHtml(attachment.name)}"></div>`;
+        return `<div class="post-media image-media"><img src="${escapeHtml(PlannerMedia.source(attachment))}" alt="${escapeHtml(attachment.name)}"></div>`;
       }
       if (attachment) {
         return `
@@ -3239,6 +3273,119 @@
         `;
       }
       return media === "tekst" ? "" : `<div class="post-media">${mediaIcons[media] || "+"} ${mediaLabels[media] || "Media"}</div>`;
+    }
+
+    function allMedia() {
+      return [...posts.map(post => post.attachment), ...ideaDocuments.flatMap(item => item.images || []), currentAttachment].filter(Boolean);
+    }
+
+    async function refreshMediaUrls(redraw = true) {
+      try {
+        await PlannerMedia.resolveAll(allMedia());
+        if (redraw) {
+          render();
+          const active = ideaDocuments.find(item => item.id === activeIdeaId);
+          if (active) renderIdeaImages(active);
+          renderAttachmentPreview();
+        }
+      } catch (error) {
+        document.getElementById("mediaStatus").textContent = error.message;
+      }
+    }
+
+    function downloadMediaBackup(remoteRows) {
+      const backup = { version: 1, createdAt: new Date().toISOString(), posts, ideaDocuments, ideaFolders, remoteRows };
+      const blob = new Blob([JSON.stringify(backup)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `Postplanner-Backup-V1-${new Date().toISOString().replace(/[:.]/g, "-")}.json`;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+    }
+
+    async function migrateStoredMedia() {
+      if (migrationBusy || savingPost || mediaBusy) return;
+      if (drawer.classList.contains("open")) { alert("Sla eerst de geopende post op of sluit deze."); return; }
+      if (!remoteReady) { alert("Verbind eerst met de online opslag en probeer opnieuw."); return; }
+      migrationBusy = true;
+      document.querySelector(".app").inert = true;
+      const status = document.getElementById("mediaStatus");
+      let completed = 0;
+      let failed = 0;
+      try {
+        if (loadingRemote) await loadingRemote;
+        // A scheduled text edit is a real pending save. Do not blindly upsert an
+        // idle active idea: another device may have changed its images meanwhile.
+        const pendingIdea = ideaSaveTimer && ideaDocuments.find(item => item.id === activeIdeaId);
+        clearTimeout(ideaSaveTimer);
+        ideaSaveTimer = null;
+        if (pendingIdea) await upsertRemoteIdea(pendingIdea);
+        await Promise.all(pendingIdeaWrites.values());
+        status.textContent = "Back-up voorbereiden…";
+        const { data: rows, error } = await supabaseClient.from(supabaseConfig.table).select("*");
+        if (error) throw new Error(`Back-up laden mislukt: ${error.message}`);
+        downloadMediaBackup(rows || []);
+        const remoteRows = new Map((rows || []).map(row => [row.id, row]));
+        function sameValue(a, b) {
+          const canonical = value => Array.isArray(value) ? value.map(canonical)
+            : value && typeof value === "object" ? Object.fromEntries(Object.keys(value).sort().map(key => [key, canonical(value[key])])) : value;
+          return JSON.stringify(canonical(a)) === JSON.stringify(canonical(b));
+        }
+        // Only replace inline data AFTER the conditional database write succeeds.
+        async function commitAttachment(id, attachment, fallbackRow) {
+          const previous = remoteRows.get(id);
+          const request = previous
+            ? supabaseClient.from(supabaseConfig.table).update({ attachment })
+                .eq("id", id).filter("attachment", previous.attachment == null ? "is" : "eq",
+                  previous.attachment == null ? null : JSON.stringify(previous.attachment)).select("id")
+            : supabaseClient.from(supabaseConfig.table).insert({ ...fallbackRow, attachment }).select("id");
+          const { data, error } = await request;
+          if (error || !data?.length) throw new Error(error?.message || "Bijlage is elders gewijzigd; probeer opnieuw.");
+        }
+        const tasks = [
+          ...posts.filter(post => PlannerMedia.legacy(post.attachment)).map(post => async () => {
+            const original = post.attachment;
+            const remote = remoteRows.get(post.id);
+            if (remote && !sameValue(remote.attachment, original)) throw new Error("Bijlage is elders gewijzigd. Herlaad en probeer opnieuw.");
+            const migrated = await PlannerMedia.migrate(original);
+            await commitAttachment(post.id, migrated, postToRow(post));
+            post.attachment = migrated;
+            savePosts(true);
+          }),
+          ...ideaDocuments.filter(item => (item.images || []).some(PlannerMedia.legacy)).map(item => async () => {
+            const remote = remoteRows.get(item.id);
+            if (remote && !sameValue(remote.attachment?.images || [], item.images)) throw new Error("Ideefoto’s zijn elders gewijzigd. Herlaad en probeer opnieuw.");
+            const images = [];
+            for (const image of item.images) images.push(await PlannerMedia.migrate(image));
+            const next = { ...item, images };
+            const attachment = remote ? { ...remote.attachment, images } : ideaToRow(next).attachment;
+            await commitAttachment(item.id, attachment, ideaToRow(next));
+            item.images = images;
+            saveIdeaDocuments(true);
+          })
+        ];
+        for (const task of tasks) {
+          status.textContent = `Bijlagen overzetten… ${completed + failed + 1}/${tasks.length}`;
+          try { await task(); completed++; }
+          catch (error) { failed++; console.warn("Bijlage behouden:", error.message); }
+        }
+        const postsCached = savePosts(true);
+        const ideasCached = saveIdeaDocuments(true);
+        const cached = postsCached && ideasCached;
+        status.textContent = `${completed} posts/ideeën bijgewerkt` + (failed ? ` · ${failed} niet afgerond, opnieuw proberen` : " · gereed")
+          + (cached ? "" : " · browseropslag nog vol");
+        if (!tasks.length) status.textContent = "Alle bijlagen gebruiken al de nieuwe opslag";
+      } catch (error) {
+        status.textContent = "Overzetten niet afgerond";
+        alert(error.message);
+      } finally {
+        migrationBusy = false;
+        document.querySelector(".app").inert = false;
+        render();
+        renderIdeaDocuments({ preserveEditor: true });
+        await refreshMediaUrls();
+      }
     }
 
     function updateScheduleSummary() {
@@ -3318,3 +3465,4 @@
   </script>
 </body>
 </html>
+
